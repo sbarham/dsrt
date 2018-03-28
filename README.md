@@ -9,7 +9,7 @@ Its key purpose is *to enable rapid development and experimentation* in a burgeo
 
 ## What is it for?
 
-__Neural DSRT__ is all about building end-to-end dialogue systems using state-of-the-art neural dialogue models. It is a new project (it was born at the University of Maryland towards the end of March, 2018), and it still has a lot of growing to do.
+__Neural DSRT__ is all about building end-to-end dialogue systems using state-of-the-art neural dialogue models. It is a new project (born at the University of Maryland in the waining days and weeks of March, 2018), and it still has a lot of growing to do.
 
 In order to help that growth along, we adopt a few guiding principles liberally from [Keras](https://github.com/keras-team/keras):
 
