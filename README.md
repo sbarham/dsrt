@@ -23,7 +23,7 @@ In order to help that growth along, we adopt a few guiding principles liberally 
 ## How do I use it? 90 seconds to Neural DSRT
 
 *This quickstart guide has yet to be written -- but it's coming soon.*
-<--
+<!--
 The core data structure of Keras is a __model__, a way to organize layers. The simplest type of model is the [`Sequential`](https://keras.io/getting-started/sequential-model-guide) model, a linear stack of layers. For more complex architectures, you should use the [Keras functional API](https://keras.io/getting-started/functional-api-guide), which allows to build arbitrary graphs of layers.
 
 Here is the `Sequential` model:
@@ -119,7 +119,7 @@ cd dsrt
 sudo pip install .
 ```
 
-Now you're ready to use Neural DSRT!
+It's as easy as that. Now you're ready to use Neural DSRT!
 
 
 # How can I help?
