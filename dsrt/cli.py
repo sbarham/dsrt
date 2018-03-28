@@ -21,8 +21,6 @@ class App:
         
         # dispatch the subcommand (or, if it's bad, issue a usage message)
         self.dispatch_subcommand(self.parser)
-        
-        return
     
     
     ##############################

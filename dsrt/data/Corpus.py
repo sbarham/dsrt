@@ -21,7 +21,7 @@ import copy
 from dsrt.config import DataConfig
 
 class Corpus:
-    def __init__(self, path=None, config=Config()):
+    def __init__(self, path=None, config=DataConfig()):
         # load configuration and init path to corpus
         self.config = config
         self.path_to_corpus = path if not path is None else self.config['path-to-corpus']

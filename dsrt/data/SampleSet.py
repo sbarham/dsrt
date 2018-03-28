@@ -49,7 +49,7 @@ class SampleSet:
         for i in range(len(self.decoder_y)):
 			if self.decoder_y[i] == pad:
 				self.decoder_y[i] = stop
-        		break
+				break
         	
         	self.decoder_x[i + 1] = self.decoder_y[i]
         	
