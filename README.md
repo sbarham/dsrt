@@ -22,7 +22,7 @@ In order to help that growth along, we adopt a few guiding principles liberally 
 
 ## How do I use it? 90 seconds to Neural DSRT
 
-*This quickstart guide has yet to be written -- but it's coming soon.*
+*This quickstart guide has yet to be written -- but it should be coming soon.*
 <!--
 The core data structure of Keras is a __model__, a way to organize layers. The simplest type of model is the [`Sequential`](https://keras.io/getting-started/sequential-model-guide) model, a linear stack of layers. For more complex architectures, you should use the [Keras functional API](https://keras.io/getting-started/functional-api-guide), which allows to build arbitrary graphs of layers.
 
@@ -107,6 +107,8 @@ Once you've done this, you're ready to install DSRT. Currently, the only way to 
 
 Just in case, instructions for installing `pip` may be found here:
 
+- [pip installation instructions](https://pip.pypa.io/en/stable/installing/)
+
 Assuming you've followed up until this point, proceed to __clone DSRT__ using `git`:
 
 ```sh
@@ -124,4 +126,4 @@ It's as easy as that. Now you're ready to use Neural DSRT!
 
 # How can I help?
 
-As we mentioned above, DSRT is very young -- only a few weeks old at the moment. If you're a developer (and especially if you're confident with deep learning, machine learning, or neural dialogue systems) and you'd like to help, please contact the original authors directly at `sbarham@cs.umd.edu`. We'd love to collaborate with you.
+As we mentioned above, DSRT is very young -- in fact, it's only a few weeks old at the moment. If you're a developer (and especially if you're confident with deep learning, machine learning, or neural dialogue systems) and you'd like to help, please contact the original authors directly at `sbarham@cs.umd.edu`. We'd love to collaborate with you.
