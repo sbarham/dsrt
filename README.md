@@ -4,7 +4,7 @@ Newborn from the University of Maryland, Neural DSRT (pronounced *dessert*) is a
 
 Its key purpose is *to enable rapid development and experimentation* in a burgeoning field otherwise bereft of high-level libraries with busy researchers in mind.
 
-<-- Read the documentation at [Keras.io](https://keras.io) -->
+<!-- Read the documentation at [Keras.io](https://keras.io) -->
 
 
 ## What is it for?
