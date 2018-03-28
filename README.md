@@ -1,33 +1,29 @@
-<<<<<<< HEAD
 # Neural DSRT: Neural dialogue systems for humans
 
-Neural DSRT (pronounced *dessert*) is a high-level neural dialogue systems API, written in Python and running on top of familiar deep-learning (DL) and machine-learning (ML) libraries like [Keras](https://github.com/keras-team/keras), [TensorFlow](https://github.com/tensorflow/tensorflow), and [scikit-learn](https://github.com/scikit-learn/scikit-learn). Its key purpose is *to enable rapid development and experimentation* in a burgeoning field otherwise bereft of high-level libraries with busy researchers in mind.
+Newborn from the University of Maryland, Neural DSRT (pronounced *dessert*) is a high-level neural dialogue systems API, written in __Python__ and running on top of familiar deep-learning (DL) and machine-learning (ML) libraries like [Keras](https://github.com/keras-team/keras), [TensorFlow](https://github.com/tensorflow/tensorflow), and [scikit-learn](https://github.com/scikit-learn/scikit-learn). It focuses on allowing for the easy construction, training, and testing of __neural dialogue models__. 
 
-Read the documentation at [Keras.io](https://keras.io).
+Its key purpose is *to enable rapid development and experimentation* in a burgeoning field otherwise bereft of high-level libraries with busy researchers in mind.
 
-Keras is compatible with: __Python 2.7-3.6__.
-
-
-------------------
-
-<!--
-
-## Guiding principles
-
-- __User friendliness.__ Keras is an API designed for human beings, not machines. It puts user experience front and center. Keras follows best practices for reducing cognitive load: it offers consistent & simple APIs, it minimizes the number of user actions required for common use cases, and it provides clear and actionable feedback upon user error.
-
-- __Modularity.__ A model is understood as a sequence or a graph of standalone, fully-configurable modules that can be plugged together with as little restrictions as possible. In particular, neural layers, cost functions, optimizers, initialization schemes, activation functions, regularization schemes are all standalone modules that you can combine to create new models.
-
-- __Easy extensibility.__ New modules are simple to add (as new classes and functions), and existing modules provide ample examples. To be able to easily create new modules allows for total expressiveness, making Keras suitable for advanced research.
-
-- __Work with Python__. No separate models configuration files in a declarative format. Models are described in Python code, which is compact, easier to debug, and allows for ease of extensibility.
+<-- Read the documentation at [Keras.io](https://keras.io) -->
 
 
-------------------
+## What is it for?
+
+__Neural DSRT__ is all about building end-to-end dialogue systems using state-of-the-art neural dialogue models. It is a new project (it was born at the University of Maryland towards the end of March, 2018), and it still has a lot of growing to do.
+
+In order to help that growth along, we adopt a few guiding principles liberally from [Keras](https://github.com/keras-team/keras):
+
+- __User-friendliness.__ Ease-of-use should be front and center, the library should expose consistent & simple APIs, and should minimize the amount of work involved in getting common use-cases up and running. The focus should be on enabling rapid, hassle-free experimentation with neural dialog models.
+
+- __Modularity.__ Dialogue experiments, and their constituent components -- dataset wrappers, data preprocessors, neural dialogue models, conversation objects -- should alike be implemented as fully-configurable modules that can be plugged together with as few restrictions as possible. Experiments, and their components, should be richly configurable -- but components should fall back on sensible defaults, so that configuration should never be necessary
+
+- __Extensibility.__ New modules should be simple to add (as new classes and functions), and existing modules and scripts should provide ample and __liberally documented__ examples.
 
 
-## Getting started: 30 seconds to Keras
+## How do I use it? 90 seconds to Neural DSRT
 
+*This quickstart guide has yet to be written -- but it's coming soon.*
+<--
 The core data structure of Keras is a __model__, a way to organize layers. The simplest type of model is the [`Sequential`](https://keras.io/getting-started/sequential-model-guide) model, a linear stack of layers. For more complex architectures, you should use the [Keras functional API](https://keras.io/getting-started/functional-api-guide), which allows to build arbitrary graphs of layers.
 
 Here is the `Sequential` model:
@@ -94,54 +90,38 @@ For a more in-depth tutorial about Keras, you can check out:
 - [Getting started with the functional API](https://keras.io/getting-started/functional-api-guide)
 
 In the [examples folder](https://github.com/keras-team/keras/tree/master/examples) of the repository, you will find more advanced models: question-answering with memory networks, text generation with stacked LSTMs, etc.
+-->
 
 
-------------------
+## How can I install it?
 
+Before attempting to install Neural DSRT, you'll need to install Keras (which it's built on):
 
-## Installation
+- [Keras installation instructions](https://keras.io/#installation)
 
-Before installing Keras, please install one of its backend engines: TensorFlow, Theano, or CNTK. We recommend the TensorFlow backend.
+In installing Keras, you'll of course need to install a neural-network backend. We recommend TensorFlow:
 
 - [TensorFlow installation instructions](https://www.tensorflow.org/install/).
-- [Theano installation instructions](http://deeplearning.net/software/theano/install.html#install).
-- [CNTK installation instructions](https://docs.microsoft.com/en-us/cognitive-toolkit/setup-cntk-on-your-machine).
 
-You may also consider installing the following **optional dependencies**:
+Once you've done this, you're ready to install DSRT. Currently, the only way to do this is from the GitHub source. Thankfully, this is pretty easy, so long as you have `pip` installed on your machine (did we mention you'll need Python? you'll need Python -- we recommend the latest version of Python 3). 
 
-- [cuDNN](https://docs.nvidia.com/deeplearning/sdk/cudnn-install/) (recommended if you plan on running Keras on GPU).
-- HDF5 and [h5py](http://docs.h5py.org/en/latest/build.html) (required if you plan on saving Keras models to disk).
-- [graphviz](https://graphviz.gitlab.io/download/) and [pydot](https://github.com/erocarrera/pydot) (used by [visualization utilities](https://keras.io/visualization/) to plot model graphs).
+Just in case, instructions for installing `pip` may be found here:
 
-Then, you can install Keras itself. There are two ways to install Keras:
-
-- **Install Keras from PyPI (recommended):**
+Assuming you've followed up until this point, proceed to __clone DSRT__ using `git`:
 
 ```sh
-sudo pip install keras
+git clone https://github.com/sbarham/dsrt.git
 ```
 
-If you are using a virtualenv, you may want to avoid using sudo:
-
+ Now, `cd` to the Neural DSRT folder and install using `pip`:
 ```sh
-pip install keras
+cd dsrt
+sudo pip install .
 ```
 
-- **Alternatively: install Keras from the GitHub source:**
+Now you're ready to use Neural DSRT!
 
-First, clone Keras using `git`:
 
-```sh
-git clone https://github.com/keras-team/keras.git
-```
+# How can I help?
 
- Then, `cd` to the Keras folder and run the install command:
-```sh
-cd keras
-sudo python setup.py install
-```
-
--->
-=======
-# dsrt
->>>>>>> c5d4c0e975375f2d4615e0a82872da3dd9594d8e
+As we mentioned above, DSRT is very young -- only a few weeks old at the moment. If you're a developer (and especially if you're confident with deep learning, machine learning, or neural dialogue systems) and you'd like to help, please contact the original authors directly at `sbarham@cs.umd.edu`. We'd love to collaborate with you.
