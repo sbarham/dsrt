@@ -14,6 +14,7 @@ class DataConfig(Config):
         self['random-state'] = 100
         self['shuffle'] = True
         self['one-hot-encode'] = False
+        self['hierarchical'] = False
         
         # reserved keywords
         self['start'] = '<start>'
@@ -49,13 +50,7 @@ class DataConfig(Config):
         self['max-utterance-length'] = 40
         self['max-dialogue-length'] = 10
 
-        
-        # general network parameters
-        self['recurrent-unit-type'] = 'gru'
-        self['hierarchical'] = False
-
-        # init parameters relevant to the four components of the network
-        self.init_embedding_config()
+        self['train-test-split'] = .8
         
     def init_levelmap(self):
         self.levelmap = dict(
@@ -72,6 +67,3 @@ class DataConfig(Config):
                 'DEBUG': 50,
                 'debug': 50
             })
-
-    def init_embedding_config(self):
-        self['embedding-dim'] = 512
