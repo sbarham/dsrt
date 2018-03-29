@@ -2,6 +2,7 @@ MANIFEST.in
 README.md
 dsrt/__init__.py
 dsrt/cli.py
+dsrt/definitions.py
 dsrt.egg-info/PKG-INFO
 dsrt.egg-info/SOURCES.txt
 dsrt.egg-info/dependency_links.txt
@@ -12,3 +13,7 @@ dsrt/models/Decoder.py
 dsrt/models/Encoder.py
 dsrt/models/EncoderDecoder.py
 dsrt/models/__init__.py
+dsrt/models/__pycache__/Decoder.cpython-36.pyc
+dsrt/models/__pycache__/Encoder.cpython-36.pyc
+dsrt/models/__pycache__/EncoderDecoder.cpython-36.pyc
+dsrt/models/__pycache__/__init__.cpython-36.pyc
