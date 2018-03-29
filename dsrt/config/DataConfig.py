@@ -36,7 +36,7 @@ class DataConfig(Config):
         # allows us to restrict the size of the dataset used -- this might help in
         # memory restricted environments, or to speed up testing:
         self['restrict-sample-size'] = True
-        self['sample-size'] = 5000 # restrict the number of dialogues to an arbitrary number
+        self['sample-size'] = 20000 # restrict the number of dialogues to an arbitrary number
         
         # use the max lengths already present in the corpus in case the user doesn't provide values
         # (this is usually preferred)
@@ -44,8 +44,8 @@ class DataConfig(Config):
         self['use-corpus-max-dialogue-length'] = False
         # with a default setting of 20x100 dialogues, a one-hot encoded
         # dialogue occupies about 160MB of space in memory
-        self['max-utterance-length'] = 50
-        self['max-dialogue-length'] = 15
+        self['max-utterance-length'] = 40
+        self['max-dialogue-length'] = 10
         
         # general network parameters
         self['recurrent-unit-type'] = 'gru'
@@ -53,12 +53,6 @@ class DataConfig(Config):
 
         # init parameters relevant to the four components of the network
         self.init_embedding_config()
-        self.init_utterance_encoder_config()
-        self.init_context_encoder_config()
-        self.init_utterance_decoder_config()
-        
-        # init training and validation parameters
-        self.init_training_and_validation_parms()
         
     def init_levelmap(self):
         self.levelmap = dict(
@@ -78,28 +72,3 @@ class DataConfig(Config):
 
     def init_embedding_config(self):
         self['embedding-dim'] = 512
-        
-    def init_utterance_encoder_config(self):
-        self['encoding-layer-width'] = 512
-        self['encoding-layer-depth'] = 3
-        self['encoding-layer-bidirectional'] = True
-
-    def init_context_encoder_config(self):
-        self['context-layer-width'] = 512
-        self['context-layer-depth'] = 2
-        self['context-layer-bidirectional'] = True
-
-    def init_utterance_decoder_config(self):
-        self['decoding-layer-width'] = 512
-        self['decoding-layer-depth'] = 3
-        self['decoding-layer-bidirectional'] = True
-        
-    def init_training_and_validation_parms(self):
-        self['optimizer'] = 'rmsprop'
-        self['loss'] = 'categorical_crossentropy'
-        self['batch-size'] = 64
-        self['train-test-split'] = .8
-        self['validation-split'] = .2
-        self['num-epochs'] = 500
-        self['reporting-frequency'] = 100
-

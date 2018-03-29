@@ -32,20 +32,6 @@ class ModelConfig(Config):
         # Either str or int is acceptable
         self['logging-level'] = logging.INFO
         self.init_levelmap()
-                
-        # allows us to restrict the size of the dataset used -- this might help in
-        # memory restricted environments, or to speed up testing:
-        self['restrict-sample-size'] = True
-        self['sample-size'] = 5000 # restrict the number of dialogues to an arbitrary number
-        
-        # use the max lengths already present in the corpus in case the user doesn't provide values
-        # (this is usually preferred)
-        self['use-corpus-max-utterance-length'] = False
-        self['use-corpus-max-dialogue-length'] = False
-        # with a default setting of 20x100 dialogues, a one-hot encoded
-        # dialogue occupies about 160MB of space in memory
-        self['max-utterance-length'] = 50
-        self['max-dialogue-length'] = 15
         
         # general network parameters
         self['recurrent-unit-type'] = 'gru'
@@ -77,20 +63,20 @@ class ModelConfig(Config):
             })
 
     def init_embedding_config(self):
-        self['embedding-dim'] = 512
+        self['embedding-dim'] = 64
         
     def init_utterance_encoder_config(self):
-        self['encoding-layer-width'] = 512
+        self['encoding-layer-width'] = 128
         self['encoding-layer-depth'] = 3
         self['encoding-layer-bidirectional'] = True
 
     def init_context_encoder_config(self):
-        self['context-layer-width'] = 512
+        self['context-layer-width'] = 128
         self['context-layer-depth'] = 2
         self['context-layer-bidirectional'] = True
 
     def init_utterance_decoder_config(self):
-        self['decoding-layer-width'] = 512
+        self['decoding-layer-width'] = 128
         self['decoding-layer-depth'] = 3
         self['decoding-layer-bidirectional'] = True
         
