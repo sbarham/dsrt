@@ -88,7 +88,7 @@ class EncoderDecoder:
         # grab the training and validation data
         encoder_x = data.train.encoder_x
         decoder_x = data.train.decoder_x
-        decoder_y = data.train.decoder_y_ohe
+        decoder_y = data.train.decoder_y #_ohe
         
         self.training_model.compile(optimizer=optimizer, loss=loss)
         self.training_model.fit([encoder_x, decoder_x], decoder_y,

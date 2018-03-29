@@ -58,7 +58,9 @@ class SampleSet:
                 self.decoder_x[i, j + 1] = self.decoder_y[i, j]
         
         # prepare decoder_y_ohe
-        self.decoder_y_ohe = self.vectorizer.ie_to_ohe_utterances(self.decoder_y)
+        old_shape = self.decoder_y.shape
+        new_shape = (old_shape[0], old_shape[1], 1)
+        self.decoder_y = self.decoder_y.reshape(new_shape)
     
     def log(self, priority, msg):
         """
