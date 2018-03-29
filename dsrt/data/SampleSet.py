@@ -2,15 +2,18 @@
 import numpy as np
 from numpy import argmax
 
+# Python stdlib
+import logging
+
 # our own imports
 from dsrt.config import DataConfig
 
-
 class SampleSet:
-    def __init__(self, dialogues, properties, config=DataConfig()):
+    def __init__(self, dialogues, vectorizer, properties, config=DataConfig()):
         self.dialogues = dialogues
         self.length = len(dialogues)
         self.config = config
+        self.vectorizer = vectorizer
         self.properties = properties
         
         # initialize the logger
@@ -40,19 +43,20 @@ class SampleSet:
         stop = self.vectorizer.word_to_index(self.config['stop'])
         pad = 0
         
-        self.encoder_x = np.copy(self.dialogues[:][0])
-        self.decoder_x = np.zeros(self.decoder_x.shape)
-        self.decoder_y = np.copy(self.dialogues[:][1])
+        self.encoder_x = np.copy(self.dialogues[:, 0])
+        self.decoder_x = np.zeros(self.encoder_x.shape)
+        self.decoder_y = np.copy(self.dialogues[:, 1])
         
         # prepare decoder_x (prefix the <start> symbol to every second-pair part)
-        self.decoder_x[:][0] = start
-        for i in range(len(self.decoder_y)):
-			if self.decoder_y[i] == pad:
-				self.decoder_y[i] = stop
-				break
-        	
-        	self.decoder_x[i + 1] = self.decoder_y[i]
-        	
+        self.decoder_x[:, 0] = start
+        for i in range(self.decoder_y.shape[0]):
+            for j in range(self.decoder_y.shape[1]):
+                if self.decoder_y[i, j] == pad:
+                    self.decoder_y[i, j] = stop
+                    break
+        
+                self.decoder_x[i, j + 1] = self.decoder_y[i, j]
+        
         # prepare decoder_y_ohe
         self.decoder_y_ohe = self.vectorizer.ie_to_ohe_utterances(self.decoder_y)
     

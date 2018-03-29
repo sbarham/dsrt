@@ -1,0 +1,3 @@
+[console_scripts]
+dsrt = dsrt.cli:run
+

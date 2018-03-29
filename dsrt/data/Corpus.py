@@ -1,8 +1,8 @@
 """
 Ideas:
-	(x) move data transformers to a sub-package
-	(2) build corpus such that it conditionally builds and passes dialogues
-	    through the transformers according to properties in DataConfig
+    (x) move data transformers to a sub-package
+    (2) build corpus such that it conditionally builds and passes dialogues
+        through the transformers according to properties in DataConfig
 """
 
 # Scikit-Learn imports
@@ -19,6 +19,8 @@ import copy
 
 # our own imports
 from dsrt.config import DataConfig
+from dsrt.data import SampleSet, Properties
+from dsrt.data.transform import Tokenizer, Filter, Padder, AdjacencyPairer, Vectorizer
 
 class Corpus:
     def __init__(self, path=None, config=DataConfig()):
@@ -36,8 +38,10 @@ class Corpus:
         self.corpus_loaded = False
         
         # load and tokenize the dataset
+        self.tokenizer = Tokenizer(self.config)
         self.dialogues = self.load_corpus(self.path_to_corpus) # <-- tokenization happens here
-        self.word_list, self.word_set = self.load_vocab(self.dialogues)
+        self.word_list, self.word_set = self.load_vocab()
+        self.vocab_size = len(self.word_set)
         
         # gather dataset properties
         self.properties = Properties(self.dialogues, self.config)
@@ -54,7 +58,7 @@ class Corpus:
         self.dialogues = self.transform(self.dialogues, transformers)
         
         # split the data
-        self.train, self.test = self.split_corpus(self.dialogues)
+        self.train, self.test = self.train_test_split()
         
         # report success!
         self.log('info', 'Corpus succesfully loaded! Ready for training.')
@@ -62,8 +66,6 @@ class Corpus:
     def init_logger(self):
         self.logger = logging.getLogger()
         self.logger.setLevel(self.config['logging-level'])
-        
-        return
     
     def load_corpus(self, path):
         self.log('info', 'Loading the dataset ...')
@@ -78,7 +80,7 @@ class Corpus:
         if self.config['restrict-sample-size']:
             dialogues = np.random.choice(dialogues, self.config['sample-size'])
         
-        return dialogues
+        return self.tokenizer.transform(dialogues)
         
     def reload_corpus(self):
         """
@@ -93,23 +95,34 @@ class Corpus:
     def load_vocab(self):
         self.log('info', 'Initializing vocabulary ...')
         
-        reserved_words = set([self.pad_u, self.pad_d, self.start, self.stop, self.unk])
+        reserved_words = set([
+            self.config['pad-u'],
+            self.config['pad-d'],
+            self.config['start'],
+            self.config['stop'],
+            self.config['unk'],
+        ])
+        
         corpus_words = set([w for d in self.dialogues for u in d for w in u])
         
         vocab_set = set.union(reserved_words, corpus_words)
-        vocab_list = list(self.vocab_set)
+        vocab_list = list(vocab_set)
         
-        self.vocab_size = len(self.vocab_list)
+        vocab_size = len(vocab_list)
         
         return vocab_list, vocab_set
     
     def transform(self, dialogues, transformers):
-    	for t in transformers:
-    		dialogues = t.transform(dialogues)
-    	
-    	return dialogues
+        for i, t in enumerate(transformers):
+            dialogues = t.transform(dialogues)
     
-    def train_test_split(self, dialogues):
+        return dialogues
+    
+    def train_test_split(self):
+        '''
+        Get a new train-test split of the Corpus' dialogues (each train and
+        test samplest is represented by a SampleSet obejct
+        '''
         self.log('info', 'Splitting the corpus into train/test subsets ...')
         
         # grab some hyperparameters from our config
@@ -117,10 +130,10 @@ class Corpus:
         rand_state = self.config['random-state']
         
         # split the corpus into train and test samples
-        train, test = train_test_split(dialogues, train_size=split, random_state=rand_state)
+        train, test = train_test_split(self.dialogues, train_size=split, random_state=rand_state)
         
-        train = DialogueSampleSet(train, self.properties)
-        test = DialogueSampleSet(test, self.properties)
+        train = SampleSet(train, self.vectorizer, self.properties)
+        test = SampleSet(test, self.vectorizer, self.properties)
         
         return train, test
     
@@ -128,6 +141,14 @@ class Corpus:
     ###################
     #    UTILITIES    #
     ###################
+    
+    def save(self):
+        # save -- how should we do this?
+        pass
+        
+    def save_vectorizer(self):
+        '''Serialize the vectorizer'''
+        
     
     def log(self, priority, msg):
         """
@@ -143,18 +164,13 @@ class Corpus:
         NB2: the levelmap is a defaultdict stored in Config; it maps priority
              strings onto integers
         """
-        # self.logger.log(self.config.levelmap[priority], msg)
         self.logger.log(logging.CRITICAL, msg)
-        
-        return
     
     def pretty_print_dialogue(self, dia):
         for utt in dia:
             if utt[0] == self.pad_d:
                 break
             print(self.stringify_utterance(utt))
-                
-        return
                       
     def stringify_utterance(self, utt):
         return ' '.join([w for w in utt if not w == self.pad_u])

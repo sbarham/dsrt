@@ -4,24 +4,33 @@ from sklearn.preprocessing import OneHotEncoder
 import numpy as np
 from numpy import argmax
 
+import logging
+import dill
+import pickle
+
 from dsrt.config import DataConfig
 
 class Vectorizer:
-	def __init__(self, vocab_list, config=DataConfig()):
-		self.config = config
-		self.vocab_list = vocab_list
-		
-		# reserved vocabulary items
+    def __init__(self, vocab_list, config=DataConfig()):
+        self.config = config
+        self.vocab_list = vocab_list
+        
+        # initialize the logger
+        self.init_logger()
+
+        # reserved vocabulary items
         self.pad_u = config['pad-u']
         self.pad_d = config['pad-d']
         self.start = config['start']
         self.stop = config['stop']
         self.unk = config['unk']
-		
-		# initialize the integer- and OHE-encoders
-		self.init_encoders()
-		
-		return
+
+        # initialize the integer- and OHE-encoders
+        self.init_encoders()
+        
+    def init_logger(self):
+        self.logger = logging.getLogger()
+        self.logger.setLevel(self.config['logging-level'])
     
     def init_encoders(self, config=DataConfig()):
         """
@@ -48,10 +57,10 @@ class Vectorizer:
         return
         
     def transform(self, dialogues, ohe=False):
-    	if not ohe:
-    		return self.vectorize_dialogues(dialogues)
-    	else:
-    		return self.vectorize_dialogues_ohe(dialogues)
+        if not ohe:
+            return self.vectorize_dialogues(dialogues)
+        else:
+            return self.vectorize_dialogues_ohe(dialogues)
     
     
     #################################
@@ -62,7 +71,7 @@ class Vectorizer:
         """
         Take in a list of dialogues and vectorize them all
         """
-        return [self.vectorize_dialogue(d) for d in dialogues]
+        return np.array([self.vectorize_dialogue(d) for d in dialogues])
     
     def vectorize_dialogue(self, dialogue):
         """
@@ -95,7 +104,10 @@ class Vectorizer:
         return self.ie.inverse_transform(utterance)
         
     def word_to_index(self, word):
-    	return self.swap_pad_and_zero(self.ie.transform([word]))[0]
+        return self.swap_pad_and_zero(self.ie.transform([word]))[0]
+    
+    def index_to_word(self, index):
+        return self.ie.inverse_transform(self.swap_pad_and_zero([index]))[0]
     
     
     #################################
@@ -172,3 +184,31 @@ class Vectorizer:
                 utterance[i] = 0
         
         return utterance
+    
+    ####################
+    #     UTILITIES    #
+    ####################
+    
+    def save(self, path):
+        with open(path, 'wb') as f:
+            pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
+            
+    def load(path):
+        with open(path, 'rb') as f:
+            return pickle.load(f)
+        
+    def log(self, priority, msg):
+        """
+        Just a wrapper, for convenience.
+        NB1: priority may be set to one of:
+        - CRITICAL     [50]
+        - ERROR        [40]
+        - WARNING      [30]
+        - INFO         [20]
+        - DEBUG        [10]
+        - NOTSET       [0]
+        Anything else defaults to [20]
+        NB2: the levelmap is a defaultdict stored in Config; it maps priority
+             strings onto integers
+        """
+        self.logger.log(logging.CRITICAL, msg)

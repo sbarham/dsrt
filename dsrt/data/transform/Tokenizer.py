@@ -1,12 +1,11 @@
 from dsrt.config import DataConfig
 
 class Tokenizer:
-	def __init__(self, properties, config=DataConfig()):
-		self.properties = properties
-		self.config = config
-	
-	def transform(self, dialogues):
-		return self.tokenize_dialogues(dialogues)
+    def __init__(self, config=DataConfig()):
+        self.config = config
+
+    def transform(self, dialogues):
+        return self.tokenize_dialogues(dialogues)
         
     def tokenize_dialogues(self, dialogues):
         return [self.tokenize_dialogue(d) for d in dialogues]

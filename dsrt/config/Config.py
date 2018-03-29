@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dsrt.definitions import ROOT_DIR
 import logging
 
 class Config(dict):
@@ -6,11 +7,18 @@ class Config(dict):
         self['model-name'] = 'test'
         
         # these are more or less global parameters
-        self['path-to-corpus'] = '../../corpora/cornell-movie/dialogues.txt'
+        self['path-to-corpus'] = ROOT_DIR + '/archive/corpora/cornell/dialogues.txt'
         self['vocab-size'] = 10000
         self['random-state'] = 100
         self['shuffle'] = True
         self['one-hot-encode'] = False
+        
+        # reserved keywords
+        self['start'] = '<start>'
+        self['stop'] = '<stop>'
+        self['pad-d'] = '<pad_d>'
+        self['pad-u'] = '<pad_u>'
+        self['unk'] = '<unk>'
         
         # logging level -- may be set to one of:
         # - CRITICAL     [50]
@@ -51,19 +59,19 @@ class Config(dict):
         self.init_training_and_validation_parms()
         
     def init_levelmap(self):
-        self.levelmap = defaultdict(
-            lambda: 20,
+        self.levelmap = dict(
+            #lambda: 20,
             {
                 'CRITICAL': 50,
                 'critical': 50,
-                'ERROR': 40,
-                'error': 40,
-                'WARNING': 30,
-                'warning': 30,
-                'INFO': 20,
-                'info': 20,
-                'DEBUG': 10,
-                'debug': 10,
+                'ERROR': 50,
+                'error': 50,
+                'WARNING': 50,
+                'warning': 50,
+                'INFO': 50,
+                'info': 50,
+                'DEBUG': 50,
+                'debug': 50
             })
 
     def init_embedding_config(self):

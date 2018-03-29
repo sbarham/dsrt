@@ -17,11 +17,12 @@ import math
 import re
 
 # Our packages
-from dsrt import Config
+from dsrt.config import ModelConfig
+from dsrt.definitions import ROOT_DIR
 
 
 class EncoderDecoder:
-    def __init__(self, encoder, decoder, config=Config()):
+    def __init__(self, encoder, decoder, config=ModelConfig()):
         self.config = config
         self.encoder = encoder
         self.decoder = decoder
@@ -29,10 +30,6 @@ class EncoderDecoder:
         # build the trainin and inference models; save them
         self.build_training_model()
         self.build_inference_model()
-        
-        self.save_models()
-        
-        return
         
     def build_training_model(self):
         self.encoder_input = self.encoder.encoder_input
@@ -99,69 +96,13 @@ class EncoderDecoder:
                                 epochs=num_epochs,
                                 validation_split=validation_split)
         
-        self.save_models()
-        
-        
-    def predict(self, x):
-        """
-        Take in an integer-vectorized (i.e., index) vector, and predict the maximally
-        likely response, returning it as an integer-vectorized (i.e., index) vector.
-        """
-        recurrent_unit = self.config['recurrent-unit-type']
-        
-        # encode the input seq into a context vector
-        if recurrent_unit == 'lstm':
-            context_state = self.encoder_model.predict(np.array(x))
-        elif recurrent_unit == 'gru':
-            hidden_state = self.encoder_model.predict(np.array(x))
-            context_state = [hidden_state]
-        else:
-            raise Exception('Invalid recurrent unit type: {}'.format(recurrent_unit))
-        
-        # create an empty target sequence, seeded with the start character
-        y = self.data.vectorize_utterance([self.data.start])
-        response = []
-        
-        # i = 0
-        while True:
-            
-            # decode the current sequence + current context into a
-            # conditional distribution over next token:
-            output_token_probs = None
-            if recurrent_unit == 'lstm':
-                output_token_probs, h, c = self.decoder_model.predict([y] + context_state)
-                context_state = [h, c]
-            elif recurrent_unit == 'gru':
-                output_token_probs, hidden_state = self.decoder_model.predict([y] + context_state)
-                context_state = [hidden_state]
-            else:
-                raise Exception('Invalid recurrent unit type: {}'.format(recurrent_unit))
-            
-            # sample a token from the output distribution (currently using maximum-likelihoo -- i.e., argmax)
-            sampled_token = np.argmax(output_token_probs[0, -1, :])
-            
-            # add the sampled token to our output string
-            response += [sampled_token]
-            
-            # exit condition: either we've
-            # - hit the max length (self.data.output_max_len), or
-            # - decoded a stop token ('\n')
-            if (sampled_token == self.data.ie.transform([self.data.stop]) or 
-                len(response) >= self.data.max_utterance_length):
-                break
-                
-            # update the np array (target seq)
-            y = np.array([sampled_token]) # np.concatenate((y, [sampled_token]))
-            
-        return response
+        # remember the vectorizer used in training
+        self.vectorizer = data.vectorizer
     
-    def save_models(self):
-        name = self.config['model-name']
-        if name == None:
-            name = 'model'
-        
-        self.training_model.save('tmp/' + name + '_train')
-        self.encoder_model.save('tmp/' + name + '_inference_encoder')
-        self.decoder_model.save('tmp/' + name + '_inference_decoder')
-        
-        return
+    def save_models(self, model_name):
+        prefix = ROOT_DIR + '/archive/models/' + model_name
+        self.training_model.save(prefix + '_train')
+        self.encoder_model.save(prefix + '_inference_encoder')
+        self.decoder_model.save(prefix + '_inference_decoder')
+        if not self.vectorizer is None:
+            self.vectorizer.save(prefix + '_vectorizer')

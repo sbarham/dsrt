@@ -17,12 +17,12 @@ import math
 import re
 
 # Our packages
-from dsrt import Config
-from dsrt import DialogueCorpus
+from dsrt.config import ModelConfig
+from dsrt.data import Corpus
 
 
 class Encoder:
-    def __init__(self, data, config=Config()):
+    def __init__(self, data, config=ModelConfig()):
         self.config = config
         self.data = data
         
@@ -47,7 +47,7 @@ class Encoder:
         bidirectional = False # self.config['encoding-layer-bidirectional']
         vocab_size = self.data.vocab_size
         embedding_dim = math.ceil(math.log(vocab_size, 2))    # self.config['embedding-dim']
-        input_length = self.data.max_utterance_length + 1
+        input_length = self.data.properties['max-utterance-length'] + 1
         
         # Assemble the network components:
         encoder_input = Input(shape=(None,))

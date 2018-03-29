@@ -9,22 +9,20 @@ import math
 import re
 
 # our imports
-from dsrt import Config
+from dsrt.config import ConversationConfig
 
 class Conversation:
-    def __init__(self, encoder, decoder, data, config=Config()):
+    def __init__(self, encoder, decoder, vectorizer, config=ConversationConfig()):
         self.config = config
         
         self.encoder = encoder
         self.decoder = decoder
-        self.data = data
+        self.vectorizer = vectorizer
         self.history = []
         
         
     def start(self, user_utterance=None):
         self.converse(user_utterance)
-        
-        return
     
     def converse(self, user_utterance=None):
         if user_utterance is None:
@@ -46,20 +44,23 @@ class Conversation:
             user_utterance = input("> ").lower()
             self.history.append("User > " + user_utterance)
             
-        return
+        print("\nConversation history:")
+        for turn in self.history:
+            print(turn)
+        print("\n")
     
     def get_response(self, utterance):
         # first tokenize the utterance
         utterance = word_tokenize(utterance)
         
         # then vectorize the utterance
-        utterance = self.data.vectorize_utterance(utterance)
+        utterance = self.vectorizer.vectorize_utterance(utterance)
         
         # then invoke the model's predict function
         response = self.predict(utterance)
         
         # then devectorize the model's prediction and return it as a string
-        return ' '.join(self.data.devectorize_utterance(response))
+        return ' '.join(self.vectorizer.devectorize_utterance(response))
     
     def predict(self, x):
         """
@@ -78,7 +79,7 @@ class Conversation:
             raise Exception('Invalid recurrent unit type: {}'.format(recurrent_unit))
         
         # create an empty target sequence, seeded with the start character
-        y = self.data.vectorize_utterance([self.data.start])
+        y = self.vectorizer.vectorize_utterance([self.config['start']])
         response = []
         
         # i = 0
@@ -105,8 +106,8 @@ class Conversation:
             # exit condition: either we've
             # - hit the max length (self.data.output_max_len), or
             # - decoded a stop token ('\n')
-            if (sampled_token == self.data.ie.transform([self.data.stop]) or 
-                len(response) >= self.data.max_utterance_length):
+            if (sampled_token == self.vectorizer.ie.transform([self.config['stop']]) or 
+                len(response) >= self.config['max-utterance-length']):
                 break
                 
             # update the np array (target seq)

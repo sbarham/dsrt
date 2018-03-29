@@ -4,17 +4,28 @@ When it is not, it becomes an interactive command-line tool.
 """
 
 import argparse
-import dsrt
+from dsrt.config import DataConfig, ModelConfig, ConversationConfig
+from dsrt.data import Corpus
+from dsrt.experiment import Context
 import os
 import sys
 
 class App:
-    description = '''some description'''
-    usage = '''some usage information'''
+    description = '''Description:
+dsrt is Neural DSRT's command-line application. This is an intuitive interface for building, configuring, and running experiments with neural dialogue models.'''
+    usage = '''dsrt [subcommand]
+    
+Some common subcommands include:
+    train
+    converse
+    wizard
+Try these commands with -h (or --help) for more information.'''
     
     def __init__(self):
         self.parser = argparse.ArgumentParser(description=self.description, usage=self.usage)
-        self.config = dsrt.Config()
+        self.data_config = DataConfig()
+        self.model_config = ModelConfig()
+        self.conversation_config = ConversationConfig()
         
         # initialize primary command's arguments
         self.init_global_args(self.parser)
@@ -42,44 +53,55 @@ class App:
 
     def train(self):
         '''The 'train' subcommand'''
+        # This logic will eventually need to be moved out to its own submodule, train ...
+        
+        # Initialize the train subcommand's argparser
         parser = argparse.ArgumentParser(description='Train a dialogue model on a corpus of dialogues')
         self.init_train_args(parser)
         
+        # Parse the args we got
         args = parser.parse_args(sys.argv[2:])
         
-        # This logic will eventually need to be moved out to its own submodule, Trainer ...
-        config = self.load_config(args.configuration)
-        data = self.load_corpus(args.dataset, config)
+        # TODO:
+        # This function and its helpers will eventually need its own module, because we'll need a better
+        # solution than copying the user preferences to each config in turn
+        self.load_config(args.configuration)
         
-        factory = dsrt.Factory(config=config, data=data)
+        # Load the corpus
+        self.load_corpus(args.corpus_path, self.data_config)
+        # self.data.save_dataset()
         
-        model = factory.get_flat_encoder_decoder(config=config)
-        factory.train(model)
+        # Build our application context
+        context = Context(self.data_config, self.model_config, self.conversation_config, self.data)
         
-        model_name = 'test'
-        #config = self.load_config(args.configuration)
-        #factory = dsrt.Factory(config=config)
-        conversation = factory.get_conversation(model_name)
-        
-        conversation.start()
-        
-        return
+        # Build the model
+        model_name = self.model_config['model-name']
+        model = context.get_flat_encoder_decoder()
+        context.train(model)
+        context.save_model(model, model_name)
     
     def converse(self):
         '''The 'converse' subcommand'''
+        # This logic may eventually need to be moved out to its own submodule, converse ...
+        
+        # Initialize the train subcommand's argparser
         parser = argparse.ArgumentParser(description='Initiate a conversation with a trained dialogue model')
         self.init_converse_args(parser)
         
+        # Parse the args we got
         args = parser.parse_args(sys.argv[2:])
         
-        # This logic will eventually need to be moved out to its own submodule, Converse ...
+        # TODO:
+        # This function and its helpers will eventually need its own module, because we'll need a better
+        # solution than copying the user preferences to each config in turn
+        # self.load_config(args.configuration)
+                           
+        # Build our application context
+        context = Context(self.data_config, self.model_config, self.conversation_config)
         
-        model_name = 'test'
-        config = self.load_config(args.configuration)
-        factory = dsrt.Factory(config=config)
-        conversation = factory.get_conversation(model_name)
-        
-        conversation.start()
+        # Get the name of the model to use and start a conversation with it
+        model_name = args.model # self.model_config['model-name']
+        context.get_conversation(model_name).start()
         
         return
     
@@ -93,37 +115,89 @@ class App:
     
     
     #############################
-    #   Application Utilities   #
+    #   Configuration Loading   #
     #############################
     
     def load_config(self, path):
         '''Load a configuration file; eventually, support dicts, .yaml, .csv, etc.'''
+        
+        # if no path was provided, resort to defaults
         if path == None:
             print("Path to config was null; using defaults.")
-            return self.config
+            return
         
+        user_config = None
+        
+        # read in the user's configuration file (for now, we hope it's yaml)
         with open(path) as f:
-            config = f.read()
+            user_config = f.read()
         
+        # load the user's configuration file into a Config object
         extension = os.path.splitext(path)
         if extension == 'yaml':
-            config = yaml.load(config)
+            user_config = yaml.load(user_config)
         else:
             raise Error('Configuration file type "{}" not supported'.format(extension))
         
-        self.config.update(config)
+        # copy the user's preferences into the default configurations
+        self.merge_config(user_config)
+    
+    def merge_config(self, user_config):
+        '''
+        Take a dictionary of user preferences and use them to update the default
+        data, model, and conversation configurations.
+        '''
         
-        return self.config
+        # provisioanlly update the default configurations with the user preferences
+        temp_data_config = copy.deepcopy(self.data_config).update(user_config)
+        temp_model_config = copy.deepcopy(self.model_config).update(user_config)
+        temp_conversation_config = copy.deepcopy(self.conversation_config).update(user_config)
+        
+        # if the new configurations validate, apply them
+        if validate_data_config(temp_data_config):
+            self.data_config = temp_data_config
+        if validate_model_config(temp_model_config):
+            self.model_config = temp_model_config
+        if validate_conversation_config(temp_conversation_config):
+            self.conversation_config = temp_conversation_config
+        
+    def validate_data_config(self, config):
+        '''
+        !! THIS SHOULD BE ITS OWN CLASS !!
+        This is a stub for now; it should validate the settings and preferences in the config,
+        raising a helpful exception if the settings are inconsistent
+        '''
+        return True
+    
+    def validate_model_config(self, config):
+        '''
+        !! THIS SHOULD BE ITS OWN CLASS !!
+        This is a stub for now; it should validate the settings and preferences in the config,
+        raising a helpful exception if the settings are inconsistent
+        '''
+        return True
+    
+    def validate_conversation_config(self, config):
+        '''
+        !! THIS SHOULD BE ITS OWN CLASS !!
+        This is a stub for now; it should validate the settings and preferences in the config,
+        raising a helpful exception if the settings are inconsistent
+        '''
+        return True
+    
+    #############################
+    #      Dataset Loading      #
+    #############################
     
     def load_corpus(self, path, config):
         '''Load a dialogue corpus; eventually, support pickles and potentially other formats'''
         
+        # use the default dataset if no path is provided
+        # TODO -- change this to use a pre-saved dataset
         if path == '':
             path = self.default_path_to_corpus
         
-        self.data = dsrt.DialogueCorpus(path=path, config=config)
-        
-        return self.data
+        self.data = Corpus(path=path, config=self.data_config)
     
     
     ###############################
@@ -132,22 +206,22 @@ class App:
 
     def init_global_args(self, parser):
         parser.add_argument('subcommand', help='the subcommand to be run')
-        
-        return
 
     def init_train_args(self, parser):
         '''Only invoked conditionally if subcommand is 'train' '''
         parser.add_argument('-C', '--configuration', help='the path to the configuration file to use')
-        parser.add_argument('-D', '--dataset', help='the path to the dialogue corpus to train on')
-
-        return
+        # eventually use names rather than paths, and store/save datasets in the archive according
+        # to a consistent scheme
+        parser.add_argument('-D', '--corpus-path', help='the path to the dialogue corpus to train on')
+        parser.add_argument('-d', '--corpus-name', help='the name of the saved dataset to train on')
 
     def init_converse_args(self, parser):
         '''Only invoked conditionally if subcommand is 'converse' '''
-        parser.add_argument('-M', '--model', help='the path to the (pretrained) dialogue model to use')
+        parser.add_argument('-m', '--model', help='the name of the (pretrained) dialogue model to use')
 
-        return
-                        
+        
+def run():
+    App()
                         
 if __name__ == '__main__':
     # build the application

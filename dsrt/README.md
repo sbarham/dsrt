@@ -1,0 +1,1 @@
+This README should provide an overview of the project structure, outline the library's architecture and design, and lay out some plans for the future -- with a view to specific tasks and contribution requests.
