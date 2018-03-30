@@ -1,6 +1,6 @@
 # Neural DSRT: Neural dialogue systems for humans
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/sbarham/dsrt/LICENSE)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/sbarham/dsrt/blob/master/LICENSE)
 
 Newborn from the University of Maryland, Neural DSRT (pronounced *dessert*) is a high-level neural dialogue systems API, written in __Python__ and running on top of familiar deep-learning (DL) and machine-learning (ML) libraries like [Keras](https://github.com/keras-team/keras), [TensorFlow](https://github.com/tensorflow/tensorflow), and [scikit-learn](https://github.com/scikit-learn/scikit-learn). It focuses on allowing for the easy construction, training, and testing of __neural dialogue models__. 
 
