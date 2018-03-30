@@ -2,9 +2,9 @@ from collections import defaultdict
 import logging
 
 from dsrt.definitions import ROOT_DIR
-from dsrt.config import Config
+from dsrt.config import BaseConfig
 
-class DataConfig(Config):
+class DataConfig(BaseConfig):
     def __init__(self):
         self['model-name'] = 'test'
         

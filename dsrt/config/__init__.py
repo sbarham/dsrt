@@ -1,4 +1,2 @@
-from . Config import Config
-from . DataConfig import DataConfig
-from . ModelConfig import ModelConfig
-from . ConversationConfig import ConversationConfig
+from . Configuration import Configuration
+from . ConfigurationLoader import ConfigurationLoader

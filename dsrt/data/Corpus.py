@@ -8,6 +8,9 @@ Ideas:
 # Scikit-Learn imports
 from sklearn.model_selection import train_test_split
 
+# H5Py
+import h5py
+
 # NumPy
 import numpy as np
 from numpy import argmax
@@ -21,20 +24,29 @@ import copy
 from dsrt.config import DataConfig
 from dsrt.data import SampleSet, Properties
 from dsrt.data.transform import Tokenizer, Filter, Padder, AdjacencyPairer, Vectorizer
+from dsrt.properties import ROOT_DIR
 
 class Corpus:
-    def __init__(self, path=None, config=DataConfig()):
+    def __init__(self, dataset_name=None, corpus_name=None config=DataConfig(), preprocessed=True):
         # load configuration and init path to corpus
         self.config = config
-        self.path_to_corpus = path if not path is None else self.config['path-to-corpus']
         
         # init logger
         self.init_logger()
         
         self.log('info', 'Logger initialized')
         self.log('info', 'Configuration loaded')
+        
+        if preprocessed:
+            # if we're loading a preprocessed dataset, exit initialization here and load it
+            self.log('warn', 'Preparing to load the dialogue dataset ...')
+            self.dataset_name = dataset_name if not dataset_name is None else self.config['dataset_name']
+            self.load_dataset(dataset_name)
+        
+        # otherwise, continue with the preprocessing pipeline ...
         self.log('warn', 'Preparing to process the dialogue corpus ...')
         
+        self.corpus_name = corpus_name if not corpus_name is None else self.config['corpus_name']
         self.corpus_loaded = False
         
         # load and tokenize the dataset
@@ -142,13 +154,42 @@ class Corpus:
     #    UTILITIES    #
     ###################
     
-    def save(self):
-        # save -- how should we do this?
-        pass
+    def save_dataset(self, dataset_name):
+        # record dataset hyperparameters
+        max_samples = self.config['sample-size']
         
-    def save_vectorizer(self):
-        '''Serialize the vectorizer'''
+        all_dialogues = self.config['use-corpus-max-dialogue-length']
+        all_utterances = self.config['use-corpus-max-utterance-length']
         
+        max_dialogue_length = 'all' if all_dialogues else str(self.config['max-dialogue-length'])
+        max_utterance_length = 'all' if all_utterances else str(self.config['max-utterance-length'])
+        
+        # create dataset name
+        dataset_name = dataset_name + '_' + max_samples + '_' + max_dialogue_length + '_' + max_utterance_length
+        dataset_path = ROOT_DIR + '/archive/data/' + dataset_name + '/'
+        
+        # save dataset
+        with h5py.File(dataset_path, 'w') as f:
+            f.create_dataset('corpus', data=self.dialogues)
+            
+            self.train.save_sampleset(f=f, name='train')
+            self.test.save_sampleset(f=f, name='test')
+            
+            # save the changes to disk
+            f.flush()
+            
+        # save the vectorizer, which we simply pickle
+        self.vectorizer.save_vectorizer(dataset_path)
+        
+    def load_dataset(self, dataset_path):
+        with h5py.File(dataset_path, 'w') as f:
+            self.dialogues = f['corpus']
+            
+            self.train = Sampleset(preprocessed=True, f=f, name='train')
+            self.test = Sampleset(preprocessed=True, f=f, name='test')
+        
+        # load the vectorizer, which we simply pickled
+        self.vectorizer = Vectorizer.load_vectorizer(dataset_path)
     
     def log(self, priority, msg):
         """

@@ -189,11 +189,11 @@ class Vectorizer:
     #     UTILITIES    #
     ####################
     
-    def save(self, path):
+    def save_vectorizer(self, path):
         with open(path, 'wb') as f:
             pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
             
-    def load(path):
+    def load_vectorizer(path):
         with open(path, 'rb') as f:
             return pickle.load(f)
         
