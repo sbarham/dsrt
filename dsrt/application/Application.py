@@ -72,7 +72,7 @@ Try these commands with -h (or --help) for more information.'''
         # parse the args we got
         args = parser.parse_args(sys.argv[2:])
 
-        utils.import_corpus(**vars(args))
+        dsrt.application.utils.import_corpus(**vars(args))
 
 
     def prepare(self):
