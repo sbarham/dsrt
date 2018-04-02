@@ -112,19 +112,55 @@ Try these commands with -h (or --help) for more information.'''
         print(CLI_DIVIDER + '\n')
         dsrt.application.utils.list_corpus()
 
-    def prepare(self):
-        '''The data preprocessing subcommand, 'prepare' '''
+    def dataset(self):
+        '''Command for manipulating or viewing datasets; has a number of subcommands'''
+
+        # Initialize the addcorpus subcommand's argparser
+        description = '''The dataset subcommand has a number of subcommands of its own, including:
+            list\t-\tlists all available datasets in dsrt's library
+            prepare\t-\tprocesses a corpus into a dataset and adds the processed dataset to dsrt's library'''
+
+        parser = argparse.ArgumentParser(description=description)
+        self.init_dataset_args(parser)
+
+        # parse the args we got
+        args = parser.parse_args(sys.argv[2:3])
+
+        corpus_command = 'dataset_' + args.dataset_command
+
+        if not hasattr(self, corpus_command):
+            print('Unrecognized dataset command.')
+            parser.print_help()
+            exit(1)
+
+        getattr(self, corpus_command)()
+
+    def dataset_prepare(self):
+        '''Subcommand of dataset for processing a corpus into a dataset'''
 
         # Initialize the prepare subcommand's argparser
         parser = argparse.ArgumentParser(description='Preprocess a raw dialogue corpus into a dsrt dataset')
-        self.init_preprocessor_args(parser)
+        self.init_dataset_prepare_args(parser)
 
         # Parse the args we got
-        args = parser.parse_args(sys.argv[2:])
+        args = parser.parse_args(sys.argv[3:])
         args.config = ConfigurationLoader(args.config).load().data_config
 
         print(CLI_DIVIDER  + '\n')
         Preprocessor(**vars(args)).run()
+
+    def dataset_list(self):
+        '''Subcommand of dataset for listing available datasets'''
+
+        # Initialize the prepare subcommand's argparser
+        parser = argparse.ArgumentParser(description='Preprocess a raw dialogue corpus into a dsrt dataset')
+        self.init_dataset_list_args(parser)
+
+        # Parse the args we got
+        args = parser.parse_args(sys.argv[3:])
+
+        print(CLI_DIVIDER  + '\n')
+        dsrt.application.utils.list_dataset()
 
     def train(self):
         '''The 'train' subcommand'''
@@ -179,6 +215,9 @@ Try these commands with -h (or --help) for more information.'''
     def init_corpus_args(self, parser):
         parser.add_argument('corpus_command', help='the corpus subcommand to be run')
 
+    def init_dataset_args(self, parser):
+        parser.add_argument('dataset_command', help='the dataset subcommand to be run')
+
     def init_corpus_add_args(self, parser):
         parser.add_argument('-f', '--corpus-path', dest='src',
                             help='the path to the corpus you wish to add')
@@ -189,12 +228,16 @@ Try these commands with -h (or --help) for more information.'''
         '''No arguments for this command'''
         pass
 
-    def init_preprocessor_args(self, parser):
+    def init_dataset_prepare_args(self, parser):
         '''Only invoked conditionally if subcommand is 'prepare' '''
         parser.add_argument('-f', '--configuration', dest='config', default=DEFAULT_USER_CONFIG_PATH,
                             help='the path to the configuration file to use -- ./config.yaml by default')
         parser.add_argument('-c', '--corpus-name', help='the name of the corpus to process')
         parser.add_argument('-n', '--dataset-name', help='the name to assign the newly processed dataset')
+
+    def init_dataset_list_args(self, parser):
+        '''No arguments for this command'''
+        pass
 
     def init_train_args(self, parser):
         '''Only invoked conditionally if subcommand is 'train' '''
