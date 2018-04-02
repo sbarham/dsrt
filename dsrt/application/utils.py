@@ -23,5 +23,5 @@ def import_corpus(src, new_name):
             else:
                 choice = input("Invalid input. Choose (y)es | (n)o: ")
 
-    open(dst, 'a+').close()
+    open(dst, 'w+').close()
     copyfile(src, dst)
