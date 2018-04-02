@@ -5,8 +5,9 @@ import numpy as np
 from numpy import argmax
 
 import logging
-# import dill
+import os
 import pickle
+import copy
 
 from dsrt.config.defaults import DataConfig
 
@@ -107,7 +108,7 @@ class Vectorizer:
         Take in a sequence of indices and transform it back into a tokenized utterance
         """
         utterance = self.swap_pad_and_zero(utterance)
-        return self.ie.inverse_transform(utterance)
+        return self.ie.inverse_transform(utterance).tolist()
 
     def word_to_index(self, word):
         return self.swap_pad_and_zero(self.ie.transform([word]))[0]
@@ -183,6 +184,13 @@ class Vectorizer:
     ###################
 
     def swap_pad_and_zero(self, utterance):
+        # This is currently destructive, because the numpy arrays it deals with
+        # are not copies. UGH imperative programming ...
+        if isinstance(utterance, np.ndarray):
+            utterance = utterance.tolist()
+        else:
+            utterance = copy.deep_copy(utterance)
+
         for i, w in enumerate(utterance):
             if w == 0:
                 utterance[i] = self.pad_u_index
@@ -196,7 +204,7 @@ class Vectorizer:
     ####################
 
     def save_vectorizer(self, path):
-        with open(path, 'wb') as f:
+        with open(os.path.join(path, 'vectorizer'), 'wb') as f:
             pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     def load_vectorizer(path):

@@ -21,7 +21,7 @@ class SampleSet:
         self.properties = properties
 
         # read in dialogues
-        self.dialogues = np.swapaxes(dialogues, 0, 1)
+        self.dialogues = dialogues
         self.length = len(dialogues)
 
         if preprocessed:
@@ -33,10 +33,6 @@ class SampleSet:
         self.encoder_x = split[0]
         self.decoder_x = split[1]
         self.decoder_y = split[2]
-
-        print("Got encoder_x = {}".format(self.encoder_x))
-        print("Got decoder_x = {}".format(self.decoder_x))
-        print("Got decoder_y = {}".format(self.decoder_y))
 
     def init_logger(self):
         self.logger = logging.getLogger()

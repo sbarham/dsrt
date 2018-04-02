@@ -31,8 +31,6 @@ class EncoderDecoderSplitter:
         stop = self.properties.stop
         pad = self.properties.pad_u
 
-        print("Got dialogues:\n{}".format(dialogues))
-
 	    # initialize encoder/decoder samples
         encoder_x = np.copy(dialogues[:, 0])
         decoder_x = np.zeros(encoder_x.shape)
@@ -41,11 +39,10 @@ class EncoderDecoderSplitter:
 	    # prepare decoder_x -- (prefix the <start> symbol to every second-pair part)
         decoder_x[:, 0] = start
         for i in range(decoder_y.shape[0]):
-            for j in range(decoder_y.shape[1]):
+            for j in range(decoder_y.shape[1] - 1):
                 if decoder_y[i, j] == pad:
                     decoder_y[i, j] = stop
                     break
-
                 decoder_x[i, j + 1] = decoder_y[i, j]
 
         # prepare decoder_y -- the sparse_categorical_crossentropy loss function expects 3D tensors,
