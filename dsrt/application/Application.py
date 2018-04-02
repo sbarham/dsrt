@@ -137,9 +137,9 @@ Try these commands with -h (or --help) for more information.'''
         parser.add_argument('subcommand', help='the subcommand to be run')
 
     def init_addcorpus_args(self, parser):
-        parser.add_argument('-f', '--corpus-path', dest='corpus_path',
+        parser.add_argument('-f', '--corpus-path', dest='src',
                             help='the path to the corpus you wish to add')
-        parser.add_argument('-n', '--name', dest='corpus_name',
+        parser.add_argument('-n', '--name', dest='new_name',
                             help='the name you wish to give the corpus in dsrt\'s library')
 
     def init_preprocessor_args(self, parser):
