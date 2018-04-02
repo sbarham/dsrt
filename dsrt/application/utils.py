@@ -25,6 +25,18 @@ def list_corpus():
     for f in corpora:
         print("\t* " + f)
 
+def list_dataset():
+    dataset_dir = os.path.join(LIB_DIR, 'datasets')
+    datasets = [d for d in os.listdir(dataset_dir) if os.path.isdir(os.path.join(dataset_dir, d))]
+
+    if not datasets:
+        print("No available datasets; try creating one by processing a corpus with 'dsrt dataset prepare'")
+        return
+
+    print("Available datasets:")
+    for d in datasets:
+        print("\t* " + d)
+
 
 def import_corpus(src, new_name):
     if not os.path.exists(src):
