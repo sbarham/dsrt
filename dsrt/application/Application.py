@@ -5,7 +5,7 @@ import sys
 
 # our imports
 import dsrt.application.utils
-from dsrt.definitions import DEFAULT_USER_CONFIG_PATH
+from dsrt.definitions import DEFAULT_USER_CONFIG_PATH, CLI_DIVIDER
 from dsrt.config import ConfigurationLoader
 from dsrt.config.defaults import DataConfig, ModelConfig, ConversationConfig
 from dsrt.application import Preprocessor, Trainer, Conversant
@@ -23,6 +23,8 @@ Some common subcommands include:
 Try these commands with -h (or --help) for more information.'''
 
     def __init__(self):
+        print()
+
         # build the primary command parser
         self.parser = argparse.ArgumentParser(description=self.description, usage=self.usage)
 
@@ -33,6 +35,8 @@ Try these commands with -h (or --help) for more information.'''
 
         # initialize primary command's arguments
         self.init_global_args(self.parser)
+
+
 
         # dispatch the subcommand (or, if it's bad, issue a usage message)
         self.dispatch_subcommand(self.parser)
@@ -76,6 +80,14 @@ Try these commands with -h (or --help) for more information.'''
         # parse the args we got
         args = parser.parse_args(sys.argv[2:3])
 
+        corpus_command = 'corpus_' + args.corpus_command
+
+        if not hasattr(self, corpus_command):
+            print('Unrecognized corpus command.')
+            parser.print_help()
+            exit(1)
+
+        getattr(self, corpus_command)()
 
 
     def corpus_add(self):
@@ -85,22 +97,19 @@ Try these commands with -h (or --help) for more information.'''
 
         # parse the args we got
         args = parser.parse_args(sys.argv[3:])
-        corpus_command = 'corpus_' + args.corpus_command
 
-        if not hasattr(self, corpus_command):
-            print('Unrecognized command.')
-            parser.print_help()
-            exit(1)
-
-        getattr(self, args.subcommand)()
+        print(CLI_DIVIDER + '\n')
+        dsrt.application.utils.import_corpus(**vars(args))
 
     def corpus_list(self):
         # Initialize the addcorpus subcommand's argparser
         parser = argparse.ArgumentParser(description='List available corpora in dsrt\'s library')
+        self.init_corpus_list_args(parser)
 
         # parse the args we got (we shouldn't have gotten any)
         args = parser.parse_args(sys.argv[3:])
 
+        print(CLI_DIVIDER + '\n')
         dsrt.application.utils.list_corpus()
 
     def prepare(self):
@@ -114,6 +123,7 @@ Try these commands with -h (or --help) for more information.'''
         args = parser.parse_args(sys.argv[2:])
         args.config = ConfigurationLoader(args.config).load().data_config
 
+        print(CLI_DIVIDER  + '\n')
         Preprocessor(**vars(args)).run()
 
     def train(self):
@@ -127,6 +137,7 @@ Try these commands with -h (or --help) for more information.'''
         args = parser.parse_args(sys.argv[2:])
         args.config = ConfigurationLoader(args.config).load().model_config
 
+        print(CLI_DIVIDER + '\n')
         Trainer(**vars(args)).run()
 
     def converse(self):
@@ -140,6 +151,7 @@ Try these commands with -h (or --help) for more information.'''
         args = parser.parse_args(sys.argv[2:])
         args.config = ConfigurationLoader(args.config).load().conversation_config
 
+        print(CLI_DIVIDER + '\n')
         Conversant(**vars(arg)).run()
 
     #############################
@@ -165,19 +177,24 @@ Try these commands with -h (or --help) for more information.'''
         parser.add_argument('subcommand', help='the subcommand to be run')
 
     def init_corpus_args(self, parser):
-        parser.add_argument('corpus-command', help='the corpus subcommand to be run')
+        parser.add_argument('corpus_command', help='the corpus subcommand to be run')
 
-    def init_addcorpus_args(self, parser):
+    def init_corpus_add_args(self, parser):
         parser.add_argument('-f', '--corpus-path', dest='src',
                             help='the path to the corpus you wish to add')
         parser.add_argument('-n', '--name', dest='new_name',
                             help='the name you wish to give the corpus in dsrt\'s library')
+
+    def init_corpus_list_args(self, parser):
+        '''No arguments for this command'''
+        pass
 
     def init_preprocessor_args(self, parser):
         '''Only invoked conditionally if subcommand is 'prepare' '''
         parser.add_argument('-f', '--configuration', dest='config', default=DEFAULT_USER_CONFIG_PATH,
                             help='the path to the configuration file to use -- ./config.yaml by default')
         parser.add_argument('-c', '--corpus-name', help='the name of the corpus to process')
+        parser.add_argument('-n', '--dataset-name', help='the name to assign the newly processed dataset')
 
     def init_train_args(self, parser):
         '''Only invoked conditionally if subcommand is 'train' '''

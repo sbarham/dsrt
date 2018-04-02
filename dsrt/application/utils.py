@@ -23,9 +23,7 @@ def list_corpus():
 
     print("Available corpora:")
     for f in corpora:
-        print("\t" + f)
-
-    print()
+        print("\t* " + f)
 
 
 def import_corpus(src, new_name):
@@ -35,12 +33,13 @@ def import_corpus(src, new_name):
     dst = os.path.join(LIB_DIR, 'corpora', new_name)
 
     if os.path.exists(dst):
-        choice = input("Corpus '{}' already exists; overwrite it? y(es) | n(o): ")
+        choice = input("Corpus '{}' already exists; overwrite it? y(es) | n(o): ".format(new_name))
         while True:
             if choice.lower().startswith('y'):
                 break
             elif choice.lower().startswith('n'):
                 print("Acknowledged; aborting command ...")
+                exit(1)
             else:
                 choice = input("Invalid input. Choose (y)es | (n)o: ")
 
