@@ -20,6 +20,7 @@ import logging
 import re
 import copy
 import os
+from math import ceil
 
 # our own imports
 from dsrt.config.defaults import DataConfig
@@ -53,7 +54,6 @@ class Corpus:
         # load and tokenize the dataset
         self.tokenizer = Tokenizer(self.config)
         self.dialogues = self.load_corpus(self.corpus_path) # <-- tokenization happens here
-        print("Dialogues now: {}".format(self.dialogues))
         self.word_list, self.word_set = self.load_vocab()
         self.vocab_size = len(self.word_set)
 
@@ -75,7 +75,7 @@ class Corpus:
         self.train, self.test = self.train_test_split()
 
         # report success!
-        self.log('info', 'Corpus succesfully loaded! Ready for training.')
+        self.log('info', 'Corpus succesfully loaded!\n')
 
     def init_logger(self):
         self.logger = logging.getLogger()
@@ -153,7 +153,12 @@ class Corpus:
         rand_state = self.config['random-state']
 
         # split the corpus into train and test samples
-        train, test = train_test_split(self.dialogues, train_size=split, random_state=rand_state)
+        # train, test = train_test_split(self.dialogues, train_size=split, random_state=rand_state)
+        shuffled = np.random.permutation(self.dialogues)
+        split_index = ceil(split * len(self.dialogues))
+        train, test = np.split(shuffled, [split_index])
+        train = np.copy(train)
+        test = np.copy(test)
 
         train = SampleSet(train, properties=self.properties, enc_dec_splitter=self.enc_dec_splitter)
         test = SampleSet(test, properties=self.properties, enc_dec_splitter=self.enc_dec_splitter)
