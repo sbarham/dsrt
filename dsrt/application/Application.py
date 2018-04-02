@@ -4,7 +4,7 @@ import os
 import sys
 
 # our imports
-import dsrt.utils
+import dsrt.application.utils
 from dsrt.config import ConfigurationLoader
 from dsrt.config.defaults import DataConfig, ModelConfig, ConversationConfig
 from dsrt.application import Preprocessor, Trainer, Conversant
