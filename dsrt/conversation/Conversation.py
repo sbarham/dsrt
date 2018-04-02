@@ -9,7 +9,7 @@ import math
 import re
 
 # our imports
-from dsrt.config import ConversationConfig
+from dsrt.config.defaults import ConversationConfig
 
 class Conversation:
     def __init__(self, encoder, decoder, vectorizer, config=ConversationConfig()):

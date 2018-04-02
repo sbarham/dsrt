@@ -8,7 +8,7 @@ import logging
 import dill
 import pickle
 
-from dsrt.config import DataConfig
+from dsrt.config.defaults import DataConfig
 
 class Vectorizer:
     def __init__(self, vocab_list, config=DataConfig()):

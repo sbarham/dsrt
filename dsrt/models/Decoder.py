@@ -17,12 +17,12 @@ import math
 import re
 
 # Our packages
-from dsrt.config import Config
+from dsrt.config.defaults import ModelConfig
 from dsrt.data import Corpus
 
 
 class Decoder:
-    def __init__(self, data, encoder, config=Config()):
+    def __init__(self, data, encoder, config=ModelConfig()):
         self.config = config
         self.data = data
         self.encoder = encoder

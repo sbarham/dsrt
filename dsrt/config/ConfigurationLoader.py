@@ -3,9 +3,9 @@ import os
 
 # our imports
 from dsrt.config import Configuration
-from data.config.validation import DataConfigValidator, ModelConfigValidator, ConversationConfigValidator
+from dsrt.config.validation import DataConfigValidator, ModelConfigValidator, ConversationConfigValidator
 
-class Loader:
+class ConfigurationLoader:
     def __init__(self, path):
         self.path = path
         self.config = None

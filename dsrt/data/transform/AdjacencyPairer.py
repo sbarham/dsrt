@@ -1,4 +1,4 @@
-from dsrt.config import DataConfig
+from dsrt.config.defaults import DataConfig
 
 class AdjacencyPairer:
     def __init__(self, properties, config=DataConfig()):

@@ -21,13 +21,13 @@ import re
 import copy
 
 # our own imports
-from dsrt.config import DataConfig
+from dsrt.config.defaults import DataConfig
 from dsrt.data import SampleSet, Properties
-from dsrt.data.transform import Tokenizer, Filter, Padder, AdjacencyPairer, Vectorizer
-from dsrt.properties import ROOT_DIR
+from dsrt.data.transform import Tokenizer, Filter, Padder, AdjacencyPairer, Vectorizer, EncoderDecoderSplitter
+from dsrt.definitions import ROOT_DIR
 
 class Corpus:
-    def __init__(self, dataset_name=None, corpus_name=None config=DataConfig(), preprocessed=True):
+    def __init__(self, dataset_name=None, corpus_name=None, config=DataConfig(), preprocessed=True):
         # load configuration and init path to corpus
         self.config = config
         
@@ -56,21 +56,20 @@ class Corpus:
         self.vocab_size = len(self.word_set)
         
         # gather dataset properties
+        self.vectorizer = Vectorizer(self.word_list, self.config)
         self.properties = Properties(self.dialogues, self.config)
+        self.add_stop_characters(self.properties, self.vectorizer)
         
         # create the data transformers
         self.filter = Filter(self.properties, self.config)
         self.padder = Padder(self.properties, self.config)
         self.pairer = AdjacencyPairer(self.properties, self.config)
-        self.vectorizer = Vectorizer(self.word_list, self.config)
+        self.enc_dec_splitter = EncoderDecoderSplitter(self.properties, self.vectorizer, self.config)
         
-        transformers = [self.filter, self.padder, self.pairer, self.vectorizer]
+        transformers = [self.filter, self.padder, self.pairer, self.vectorizer, self.enc_dec_splitter]
         
         # transform the data
         self.dialogues = self.transform(self.dialogues, transformers)
-        
-        # split the data
-        self.train, self.test = self.train_test_split()
         
         # report success!
         self.log('info', 'Corpus succesfully loaded! Ready for training.')

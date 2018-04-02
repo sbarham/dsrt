@@ -2,7 +2,7 @@ from collections import defaultdict
 import logging
 
 from dsrt.definitions import ROOT_DIR
-from dsrt.config import BaseConfig
+from dsrt.config.defaults import BaseConfig
 
 class DataConfig(BaseConfig):
     def __init__(self):

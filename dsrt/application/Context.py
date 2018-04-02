@@ -9,11 +9,11 @@ Maintains a dialogue research application context, which includes (minimally)
 Using this application context, is able to construct any kind of neural dialog model desired.
 """
 
-import keras.models.load_model
+import keras
 from pickle import load
 from dsrt.data.transform import Vectorizer
 from dsrt.models import Encoder, Decoder, EncoderDecoder
-from dsrt.config import DataConfig, ModelConfig, ConversationConfig
+from dsrt.config.defaults import DataConfig, ModelConfig, ConversationConfig
 from dsrt.conversation import Conversation
 from dsrt.definitions import ROOT_DIR
 

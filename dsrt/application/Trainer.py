@@ -1,5 +1,5 @@
 from dsrt.application import Context
-from dsrt.config import ModelConfig
+from dsrt.config.defaults import ModelConfig
 
 class Trainer:
     def __init__(self, config=ModelConfig()):

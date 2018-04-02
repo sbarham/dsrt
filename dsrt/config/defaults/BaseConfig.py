@@ -2,7 +2,7 @@ from collections import defaultdict
 from dsrt.definitions import ROOT_DIR
 import logging
 
-class Config(dict):
+class BaseConfig(dict):
     def __init__(self):
         self['model-name'] = 'test'
         

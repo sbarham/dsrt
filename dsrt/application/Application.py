@@ -4,6 +4,7 @@ import os
 import sys
 
 # our imports
+from dsrt.config.defaults import DataConfig, ModelConfig, ConversationConfig
 from dsrt.application import Preprocessor, Trainer, Conversant
 
 
@@ -61,7 +62,7 @@ Try these commands with -h (or --help) for more information.'''
         
         # Initialize the train subcommand's argparser
         parser = argparse.ArgumentParser(description='Preprocess a raw dialogue corpus into a dsrt dataset')
-        self.init_train_args(parser)
+        self.init_preprocessor_args(parser)
         
         # Parse the args we got
         args = parser.parse_args(sys.argv[2:])
@@ -113,14 +114,17 @@ Try these commands with -h (or --help) for more information.'''
 
     def init_global_args(self, parser):
         parser.add_argument('subcommand', help='the subcommand to be run')
+        
+    def init_preprocessor_args(self, parser):
+        '''Only invoked conditionally if subcommand is 'prepare' '''
+        parser.add_argument('-d', '--corpus-name', help='the name of the saved dataset to train on')
 
     def init_train_args(self, parser):
         '''Only invoked conditionally if subcommand is 'train' '''
-        parser.add_argument('-C', '--configuration', help='the path to the configuration file to use')
+        parser.add_argument('-C', '--configuration', dest='config', help='the path to the configuration file to use')
         # eventually use names rather than paths, and store/save datasets in the archive according
         # to a consistent scheme
-        parser.add_argument('-D', '--corpus-path', help='the path to the dialogue corpus to train on')
-        parser.add_argument('-d', '--corpus-name', help='the name of the saved dataset to train on')
+        parser.add_argument('-d', '--corpus-name', help='the name of the corpus or saved dataset to train on')
 
     def init_converse_args(self, parser):
         '''Only invoked conditionally if subcommand is 'converse' '''

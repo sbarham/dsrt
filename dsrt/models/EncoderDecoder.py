@@ -17,7 +17,7 @@ import math
 import re
 
 # Our packages
-from dsrt.config import ModelConfig
+from dsrt.config.defaults import ModelConfig
 from dsrt.definitions import ROOT_DIR
 
 

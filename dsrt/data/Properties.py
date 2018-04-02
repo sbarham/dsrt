@@ -1,4 +1,4 @@
-from dsrt.config import DataConfig
+from dsrt.config.defaults import DataConfig
 
 class Properties(dict):
     def __init__(self, dialogues, config=DataConfig()):

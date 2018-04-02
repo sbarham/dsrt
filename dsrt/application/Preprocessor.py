@@ -1,4 +1,4 @@
-from dsrt.config import DataConfig
+from dsrt.config.defaults import DataConfig
 
 class Preprocessor:
     def __init__(self, config=DataConfig()):

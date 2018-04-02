@@ -1,6 +1,6 @@
 import logging
 
-from dsrt.config import DataConfig
+from dsrt.config.defaults import DataConfig
 
 class Filter:
     def __init__(self, properties, config=DataConfig()):
