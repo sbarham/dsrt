@@ -18,7 +18,7 @@ class ConfigurationLoader:
         self.path = path
 
     def load(self):
-        load_config(self.path)
+        self.load_config(self.path)
         return self.configuration
 
     def load_config(self, path):
