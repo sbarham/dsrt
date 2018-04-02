@@ -5,6 +5,7 @@ import sys
 
 # our imports
 import dsrt.application.utils
+from dsrt.definitions import DEFAULT_USER_CONFIG_PATH
 from dsrt.config import ConfigurationLoader
 from dsrt.config.defaults import DataConfig, ModelConfig, ConversationConfig
 from dsrt.application import Preprocessor, Trainer, Conversant
