@@ -7,8 +7,21 @@ from dsrt.definitions import LIB_DIR
 import os
 from shutil import copyfile
 
-def import_corpus(corpus_path, corpus_name):
-    if not os.path.exists(corpus_path):
-        raise Error("Unable to locate corpus at '{}'".format(corpus_path))
+def import_corpus(src, new_name):
+    if not os.path.exists(src):
+        raise Error("Unable to locate corpus at '{}'".format(src))
 
-    copyfile(corpus_path, os.path.join(LIB_DIR, 'corpora', corpus_name))
+    dst = os.path.join(LIB_DIR, 'corpora', new_name)
+
+    if os.path.exists(dst):
+        choice = input("Corpus '{}' already exists; overwrite it? y(es) | n(o): ")
+        while True:
+            if choice.lower().startswith('y'):
+                break
+            elif choice.lower().startswith('n'):
+                print("Acknowledged; aborting command ...")
+            else:
+                choice = input("Invalid input. Choose (y)es | (n)o: ")
+
+    open(src, 'a').close()
+    copyfile(src, dst)
