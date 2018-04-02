@@ -6,6 +6,27 @@ application.
 from dsrt.definitions import LIB_DIR
 import os
 from shutil import copyfile
+from os.path import isfile, join
+
+
+########################
+#   Corpus Utilities   #
+########################
+
+def list_corpus():
+    corpus_dir = os.path.join(LIB_DIR, 'corpora')
+    corpora = [f for f in os.listdir(corpus_dir) if os.path.isfile(os.path.join(corpus_dir, f))]
+
+    if not corpora:
+        print("No available corpora; try importing one with 'dsrt corpus add'")
+        return
+
+    print("Available corpora:")
+    for f in corpora:
+        print("\t" + f)
+
+    print()
+
 
 def import_corpus(src, new_name):
     if not os.path.exists(src):
@@ -25,3 +46,5 @@ def import_corpus(src, new_name):
 
     open(dst, 'a+').close()
     copyfile(src, dst)
+
+    print("Sucessfully added corpus; exiting ...")

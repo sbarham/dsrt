@@ -62,18 +62,46 @@ Try these commands with -h (or --help) for more information.'''
         # use dispatch pattern to invoke method with same name
         getattr(self, args.subcommand)()
 
-    def addcorpus(self):
+    def corpus(self):
         '''Command to add a corpus to the dsrt library'''
 
         # Initialize the addcorpus subcommand's argparser
-        parser = argparse.ArgumentParser(description='Preprocess a raw dialogue corpus into a dsrt dataset')
-        self.init_addcorpus_args(parser)
+        description = '''The corpus subcommand has a number of subcommands of its own, including:
+            list\t-\tlists all available corpora in dsrt's library
+            add\t-\tadds a corpus to dsrt's library'''
+
+        parser = argparse.ArgumentParser(description=description)
+        self.init_corpus_args(parser)
 
         # parse the args we got
-        args = parser.parse_args(sys.argv[2:])
+        args = parser.parse_args(sys.argv[2:3])
 
-        dsrt.application.utils.import_corpus(**vars(args))
 
+
+    def corpus_add(self):
+        # Initialize the addcorpus subcommand's argparser
+        parser = argparse.ArgumentParser(description='Add a corpus to dsrt\'s library')
+        self.init_corpus_add_args(parser)
+
+        # parse the args we got
+        args = parser.parse_args(sys.argv[3:])
+        corpus_command = 'corpus_' + args.corpus_command
+
+        if not hasattr(self, corpus_command):
+            print('Unrecognized command.')
+            parser.print_help()
+            exit(1)
+
+        getattr(self, args.subcommand)()
+
+    def corpus_list(self):
+        # Initialize the addcorpus subcommand's argparser
+        parser = argparse.ArgumentParser(description='List available corpora in dsrt\'s library')
+
+        # parse the args we got (we shouldn't have gotten any)
+        args = parser.parse_args(sys.argv[3:])
+
+        dsrt.application.utils.list_corpus()
 
     def prepare(self):
         '''The data preprocessing subcommand, 'prepare' '''
@@ -135,6 +163,9 @@ Try these commands with -h (or --help) for more information.'''
 
     def init_global_args(self, parser):
         parser.add_argument('subcommand', help='the subcommand to be run')
+
+    def init_corpus_args(self, parser):
+        parser.add_argument('corpus-command', help='the corpus subcommand to be run')
 
     def init_addcorpus_args(self, parser):
         parser.add_argument('-f', '--corpus-path', dest='src',
