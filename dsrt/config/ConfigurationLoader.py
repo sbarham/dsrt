@@ -30,7 +30,7 @@ class ConfigurationLoader:
             return
 
         if not os.path.exists(path):
-            print("No user config file found at default location; using defaults.")
+            print("[No user config file found at default location; using defaults.]\n")
             return
 
 

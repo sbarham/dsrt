@@ -9,6 +9,14 @@ dsrt.egg-info/dependency_links.txt
 dsrt.egg-info/entry_points.txt
 dsrt.egg-info/requires.txt
 dsrt.egg-info/top_level.txt
+dsrt/library/corpora/test
+dsrt/library/datasets/test/data
+dsrt/library/datasets/test/vectorizer
+dsrt/library/models/README.md
+dsrt/library/models/test_inference_decoder
+dsrt/library/models/test_inference_encoder
+dsrt/library/models/test_train
+dsrt/library/models/test_vectorizer
 dsrt/models/Decoder.py
 dsrt/models/Encoder.py
 dsrt/models/EncoderDecoder.py
