@@ -22,7 +22,7 @@ from dsrt.data import Corpus
 
 
 class Decoder:
-    def __init__(self, data, encoder, config=ModelConfig()):
+    def __init__(self, data=None, encoder=None, config=ModelConfig()):
         self.config = config
         self.data = data
         self.encoder = encoder
@@ -45,7 +45,7 @@ class Decoder:
         hidden_dim = self.config['encoding-layer-width']
         recurrent_unit = self.config['recurrent-unit-type']
         bidirectional = False #self.config['encoding-layer-bidirectional']
-        vocab_size = self.data.vocab_size
+        vocab_size = self.data.properties.vocab_size
         embedding_dim = math.ceil(math.log(vocab_size, 2))    # self.config['embedding-dim']
         input_length = self.data.properties['max-utterance-length'] + 1
         

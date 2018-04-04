@@ -18,6 +18,7 @@ class Conversation:
         self.encoder = encoder
         self.decoder = decoder
         self.vectorizer = vectorizer
+        self.max_utterance_length = self.vectorizer.properties['max-utterance-length']
         self.history = []
         
         
@@ -38,7 +39,7 @@ class Conversation:
             
             # add it to the history and display to the user
             self.history.append("Machine > " + response)
-            print(response)
+            print("Computer:\t'{}'".format(response))
             
             # get the user's next utterance
             user_utterance = input("> ").lower()
@@ -51,12 +52,14 @@ class Conversation:
     
     def get_response(self, utterance):
         # first tokenize the utterance
-        utterance = word_tokenize(utterance)
+        utterance = word_tokenize(utterance)[:self.max_utterance_length]
+        print("User:\t\t'{}'".format(utterance))
         
         # then vectorize the utterance
         utterance = self.vectorizer.vectorize_utterance(utterance)
         
         # then invoke the model's predict function
+        print("\t\t {}".format(utterance))
         response = self.predict(utterance)
         
         # then devectorize the model's prediction and return it as a string
@@ -82,9 +85,8 @@ class Conversation:
         y = self.vectorizer.vectorize_utterance([self.config['start']])
         response = []
         
-        # i = 0
-        while True:
-            
+        i = 0
+        while True: 
             # decode the current sequence + current context into a
             # conditional distribution over next token:
             output_token_probs = None
@@ -102,6 +104,8 @@ class Conversation:
             
             # add the sampled token to our output string
             response += [sampled_token]
+            print("i={}, t={}".format(i, sampled_token))
+            i = i + 1
             
             # exit condition: either we've
             # - hit the max length (self.data.output_max_len), or
@@ -111,6 +115,6 @@ class Conversation:
                 break
                 
             # update the np array (target seq)
-            y = np.array([sampled_token]) # np.concatenate((y, [sampled_token]))
+            y = np.array([sampled_token])
             
-        return response
+        return response[:-1]

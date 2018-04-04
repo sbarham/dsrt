@@ -12,9 +12,10 @@ import copy
 from dsrt.config.defaults import DataConfig
 
 class Vectorizer:
-    def __init__(self, vocab_list, config=DataConfig()):
+    def __init__(self, vocab_list, properties, config=DataConfig()):
         self.config = config
         self.vocab_list = vocab_list
+        self.properties = properties
 
         # initialize the logger
         self.init_logger()
@@ -79,7 +80,7 @@ class Vectorizer:
         Take in a dialogue (a sequence of tokenized utterances) and transform it into a
         sequence of sequences of indices
         """
-        return [self.vectorize_utterance(u) for u in dialogue]
+        return np.array([self.vectorize_utterance(u) for u in dialogue])
 
     def vectorize_utterance(self, utterance):
         """
@@ -89,7 +90,7 @@ class Vectorizer:
             if not word in self.vocab_list:
                 utterance[i] = '<unk>'
 
-        return self.swap_pad_and_zero(self.ie.transform(utterance))
+        return np.array(self.swap_pad_and_zero(self.ie.transform(utterance)))
 
     def devectorize_dialogues(self, dialogues):
         """
@@ -189,7 +190,7 @@ class Vectorizer:
         if isinstance(utterance, np.ndarray):
             utterance = utterance.tolist()
         else:
-            utterance = copy.deep_copy(utterance)
+            utterance = copy.deepcopy(utterance)
 
         for i, w in enumerate(utterance):
             if w == 0:
@@ -208,7 +209,7 @@ class Vectorizer:
             pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
 
     def load_vectorizer(path):
-        with open(path, 'rb') as f:
+        with open(os.path.join(path, 'vectorizer'), 'rb') as f:
             return pickle.load(f)
 
     def log(self, priority, msg):

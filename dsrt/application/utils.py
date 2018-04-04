@@ -36,6 +36,13 @@ def list_dataset():
     print("Available datasets:")
     for d in datasets:
         print("\t* " + d)
+        
+def dataset_exists(dataset_name):
+    '''If a dataset with the given name exists, return its absolute path; otherwise return None'''
+    dataset_dir = os.path.join(LIB_DIR, 'datasets')
+    dataset_path = os.path.join(dataset_dir, dataset_name)
+    
+    return dataset_path if os.path.isdir(dataset_path) else None
 
 
 def import_corpus(src, new_name):

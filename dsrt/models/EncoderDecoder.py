@@ -13,16 +13,18 @@ from nltk import word_tokenize
 import numpy as np
 
 # Python stdlib
+import os
 import math
 import re
 
 # Our packages
+from dsrt.definitions import LIB_DIR
 from dsrt.config.defaults import ModelConfig
 from dsrt.definitions import ROOT_DIR
 
 
 class EncoderDecoder:
-    def __init__(self, encoder, decoder, config=ModelConfig()):
+    def __init__(self, encoder=None, decoder=None, config=ModelConfig()):
         self.config = config
         self.encoder = encoder
         self.decoder = decoder
@@ -99,10 +101,10 @@ class EncoderDecoder:
         # remember the vectorizer used in training
         self.vectorizer = data.vectorizer
     
-    def save_models(self, model_name):
-        prefix = ROOT_DIR + '/archive/models/' + model_name
-        self.training_model.save(prefix + '_train')
-        self.encoder_model.save(prefix + '_inference_encoder')
-        self.decoder_model.save(prefix + '_inference_decoder')
+    def save_models(self, model_path):
+        self.training_model.save(os.path.join(model_path, 'train'))
+        self.encoder_model.save(os.path.join(model_path, 'inference_encoder'))
+        self.decoder_model.save(os.path.join(model_path, 'inference_decoder'))
+        
         if not self.vectorizer is None:
-            self.vectorizer.save(prefix + '_vectorizer')
+            self.vectorizer.save_vectorizer(model_path)

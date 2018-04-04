@@ -188,7 +188,7 @@ Try these commands with -h (or --help) for more information.'''
         args.config = ConfigurationLoader(args.config).load().conversation_config
 
         print(CLI_DIVIDER + '\n')
-        Conversant(**vars(arg)).run()
+        Conversant(**vars(args)).run()
 
     #############################
     #      Dataset Loading      #
@@ -251,4 +251,4 @@ Try these commands with -h (or --help) for more information.'''
         '''Only invoked conditionally if subcommand is 'converse' '''
         parser.add_argument('-f', '--configuration', dest='config', default=DEFAULT_USER_CONFIG_PATH,
                             help='the path to the configuration file to use -- ./config.yaml by default')
-        parser.add_argument('-m', '--model', help='the name of the (pretrained) dialogue model to use')
+        parser.add_argument('-m', '--model', dest='model_name', help='the name of the (pretrained) dialogue model to use')

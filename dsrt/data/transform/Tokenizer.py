@@ -1,3 +1,4 @@
+from nltk import word_tokenize
 from dsrt.config.defaults import DataConfig
 
 class Tokenizer:
@@ -15,4 +16,4 @@ class Tokenizer:
         return [self.tokenize_utterance(u) for u in utterances]
 
     def tokenize_utterance(self, utterance):
-        return utterance.split(' ')
+        return word_tokenize(utterance)
