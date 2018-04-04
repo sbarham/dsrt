@@ -7,12 +7,12 @@ class Trainer:
         self.config = config
         self.dataset_name = dataset_name
         if dataset_name is None:
-        	self.dataset_name = config['dataset-name']
+            self.dataset_name = config['dataset-name']
 
     def run(self):
-    	# Load the dataset (perhaps make a set Dataset distinct from Corpus?)
-    	dataset_path = dataset_exists(dataset_name)
-		corpus = Corpus(preprocessed=True, dataset_path=dataset_path)
+        # Load the dataset (perhaps make a set Dataset distinct from Corpus?)
+        dataset_path = dataset_exists(dataset_name)
+        corpus = Corpus(preprocessed=True, dataset_path=dataset_path)
 
         # Build our application context
         context = Context(model_config=self.model_config, data=self.data)
