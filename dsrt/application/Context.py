@@ -19,22 +19,19 @@ from dsrt.definitions import ROOT_DIR
 
 class Context:
     def __init__(self, data_config=DataConfig(), model_config=ModelConfig,
-                 conversation_config=ConversationConfig(), data=None):
+                 conversation_config=ConversationConfig(), dataset=None):
         self.data_config = data_config
         self.model_config = model_config
         self.conversation_config = conversation_config
 
-        self.data = data
+        self.dataset = dataset
         self.model = None
 
-    def train(self, model):
-        model.fit(self.data)
+    def train(self):
+        self.model.fit(self.dataset)
 
     def save_model(self, model_name):
         self.model.save_models(model_name)
-
-    def save_dataset(self, dataset_name):
-        self.data.save_dataset(dataset_name)
 
     def load_model(self, model_name):
         # load the encoder and decoder inference models
@@ -42,19 +39,14 @@ class Context:
         self.training_model = keras.models.load_model(prefix + '_train')
         self.inference_encoder = keras.models.load_model(prefix + '_inference_encoder')
         self.inference_decoder = keras.models.load_model(prefix + '_inference_decoder')
-        vectorizer = Vectorizer.load(prefix + '_vectorizer')
-
-    def load_dataset(self, dataset_name):
-        print("This method has not been implemented yet")
-
-        return None
+        self.vectorizer = Vectorizer.load(prefix + '_vectorizer')
 
     def build_model(self):
         '''Find out the type of model configured and dispatch the request to the appropriate method'''
         if self.model_config['model-type']:
-            return self.build_red()
+            self.model = self.build_red()
         elif self.model_config['model-type']:
-            return self.buidl_hred()
+            self.model = self.buidl_hred()
         else:
             raise Error("Unrecognized model type '{}'".format(self.model_config['model-type']))
 

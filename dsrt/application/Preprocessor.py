@@ -32,10 +32,10 @@ class Preprocessor:
     def run(self):
         print("Processing corpus ...")
 
-        self.corpus = Corpus(self.corpus_path, self.config)
+        self.dataset = Corpus(self.corpus_path, self.config).prepare_dataset()
 
         print("Processing successful; saving corpus ...")
 
-        self.corpus.save_dataset(self.dataset_name, self.dataset_path)
+        self.dataset.save_dataset(self.dataset_name, self.dataset_path)
 
         print("Done; exiting successfully.")
