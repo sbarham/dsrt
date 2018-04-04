@@ -68,11 +68,7 @@ class Corpus:
         self.pairer = AdjacencyPairer(self.properties, self.config)
         self.enc_dec_splitter = EncoderDecoderSplitter(self.properties, self.vectorizer, self.config)
 
-        transformers = [self.filter, self.padder, self.pairer, self.vectorizer]
-
-        # transform the data
-        self.dialogues = self.transform(self.dialogues, transformers)
-        self.train, self.test = self.train_test_split()
+        self.transformers = [self.filter, self.padder, self.pairer, self.vectorizer]
 
         # report success!
         self.log('info', 'Corpus succesfully loaded!\n')
@@ -89,12 +85,6 @@ class Corpus:
         if not self.corpus_loaded:
             with open(path, 'r') as f:
                 dialogues = list(f)
-
-        # if desired, retain only a subset of the dialogues:
-        # if self.config['restrict-sample-size']:
-        #    dialogues = np.random.choice(dialogues, self.config['sample-size'])
-        # ^ this is doing WEIRD things -- perhaps it needs to be placed elsewhere,
-        # where it can actually operate on a numpy array
 
         return self.tokenizer.transform(dialogues)
 
@@ -135,11 +125,11 @@ class Corpus:
         properties.stop = vectorizer.word_to_index(self.config['stop'])
         properties.unk = vectorizer.word_to_index(self.config['unk'])
 
-    def transform(self, dialogues, transformers):
-        for i, t in enumerate(transformers):
-            dialogues = t.transform(dialogues)
-
-        return dialogues
+    def prepare_dataset(self):
+        # transform the data
+        self.dialogues = self.transform(self.dialogues, self.transformers)
+        self.train, self.test = self.train_test_split()
+        self.dataset = Dataset(self.dialogues, self.train, self.test, self.vectorizer)
 
     def train_test_split(self):
         '''
@@ -165,34 +155,16 @@ class Corpus:
 
         return train, test
 
+    def transform(self, dialogues, transformers):
+        for i, t in enumerate(transformers):
+            dialogues = t.transform(dialogues)
+
+        return dialogues
+
 
     ###################
     #    UTILITIES    #
     ###################
-
-    def save_dataset(self, dataset_name, dataset_path):
-        # save dataset
-        with h5py.File(os.path.join(dataset_path, 'data'), 'w') as f:
-            f.create_dataset('vectorized_corpus', data=self.dialogues)
-
-            self.train.save_sampleset(f=f, name='train')
-            self.test.save_sampleset(f=f, name='test')
-
-            # save the changes to disk
-            f.flush()
-
-        # save the vectorizer, which we simply pickle
-        self.vectorizer.save_vectorizer(dataset_path)
-
-    def load_dataset(self, dataset_path):
-        with h5py.File(dataset_path, 'w') as f:
-            self.dialogues = f['corpus']
-
-            self.train = Sampleset(preprocessed=True, f=f, name='train')
-            self.test = Sampleset(preprocessed=True, f=f, name='test')
-
-        # load the vectorizer, which we simply pickled
-        self.vectorizer = Vectorizer.load_vectorizer(dataset_path)
 
     def log(self, priority, msg):
         """
