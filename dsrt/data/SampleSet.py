@@ -9,8 +9,7 @@ import logging
 from dsrt.config.defaults import DataConfig
 
 class SampleSet:
-    def __init__(self, dialogues=None, enc_dec_splitter=None, properties=None, config=DataConfig(),
-                 preprocessed=False, name=None, f=None):
+    def __init__(self, dialogues=None, enc_dec_splitter=None, properties=None, config=DataConfig()):
         # load the config
         self.config = config
 
@@ -22,18 +21,14 @@ class SampleSet:
 
         # read in dialogues
         self.dialogues = dialogues
-        self.length = len(dialogues)
 
-        if preprocessed:
-        	self.load_sampleset(f, name)
-        	return
-
+    def prepare_sampleset(self):
         # make encoder/decoder split
         split = self.enc_dec_splitter.transform(self.dialogues)
         self.encoder_x = split[0]
         self.decoder_x = split[1]
         self.decoder_y = split[2]
-
+        
     def init_logger(self):
         self.logger = logging.getLogger()
         self.logger.setLevel(self.config['logging-level'])

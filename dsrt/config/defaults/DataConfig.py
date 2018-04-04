@@ -1,13 +1,19 @@
 from collections import defaultdict
 import logging
-
+import os
 from dsrt.definitions import LIB_DIR
 from dsrt.config.defaults import BaseConfig
 
-class DataConfig(BaseConfig):
+class DataConfig(dict):
     def __init__(self):
+        # add the base configuration
+        self.update(BaseConfig())
+        
         # general dataset parameters
-        self['path-to-corpus'] = LIB_DIR + '/corpora/test'
+        self['corpora-dir'] = os.path.join(LIB_DIR, 'corpora')
+        self['datasets-dir'] = os.path.join(LIB_DIR, 'datasets')
+        self['corpus-name'] = 'test'
+        self['dataset-name'] = 'test'
         self['vocab-size'] = 10000
         self['random-state'] = 100
         self['shuffle'] = True

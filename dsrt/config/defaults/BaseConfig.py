@@ -1,11 +1,18 @@
 from collections import defaultdict
 from dsrt.definitions import LIB_DIR
+import os
 import logging
 
 class BaseConfig(dict):
     def __init__(self):
         # these are more or less global parameters
-        self['path-to-library'] = LIB_DIR
+        self['library-dir'] = LIB_DIR
+        self['corpora-dir'] = os.path.join(LIB_DIR, 'corpora')
+        self['datasets-dir'] = os.path.join(LIB_DIR, 'datasets')
+        self['models-dir'] = os.path.join(LIB_DIR, 'models')
+        self['corpus-name'] = 'test'
+        self['dataset-name'] = 'test'
+        self['model-name'] = 'test'
 
         # reserved keywords
         self['start'] = '<start>'

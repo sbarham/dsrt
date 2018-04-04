@@ -24,7 +24,7 @@ from math import ceil
 
 # our own imports
 from dsrt.config.defaults import DataConfig
-from dsrt.data import SampleSet, Properties
+from dsrt.data import DataSet, SampleSet, Properties
 from dsrt.data.transform import Tokenizer, Filter, Padder, AdjacencyPairer, Vectorizer, EncoderDecoderSplitter
 from dsrt.definitions import ROOT_DIR
 
@@ -58,8 +58,8 @@ class Corpus:
         self.vocab_size = len(self.word_set)
 
         # gather dataset properties
-        self.vectorizer = Vectorizer(self.word_list, self.config)
-        self.properties = Properties(self.dialogues, self.config)
+        self.properties = Properties(self.dialogues, self.vocab_size, self.config)
+        self.vectorizer = Vectorizer(self.word_list, self.properties, self.config)
         self.add_reserved_words(self.properties, self.vectorizer)
 
         # create the data transformers
@@ -84,7 +84,7 @@ class Corpus:
 
         if not self.corpus_loaded:
             with open(path, 'r') as f:
-                dialogues = list(f)
+                dialogues = [l.lower() for l in list(f)]
 
         return self.tokenizer.transform(dialogues)
 
@@ -129,7 +129,7 @@ class Corpus:
         # transform the data
         self.dialogues = self.transform(self.dialogues, self.transformers)
         self.train, self.test = self.train_test_split()
-        self.dataset = Dataset(self.dialogues, self.train, self.test, self.vectorizer)
+        self.dataset = DataSet(self.dialogues, self.properties, self.train, self.test, self.vectorizer)
 
     def train_test_split(self):
         '''
@@ -151,7 +151,9 @@ class Corpus:
         test = np.copy(test)
 
         train = SampleSet(train, properties=self.properties, enc_dec_splitter=self.enc_dec_splitter)
+        train.prepare_sampleset()
         test = SampleSet(test, properties=self.properties, enc_dec_splitter=self.enc_dec_splitter)
+        test.prepare_sampleset()
 
         return train, test
 

@@ -1,8 +1,11 @@
+import os
+import pickle
 from dsrt.config.defaults import DataConfig
 
 class Properties(dict):
-    def __init__(self, dialogues, config=DataConfig()):
+    def __init__(self, dialogues, vocab_size, config=DataConfig()):
         self.config = config
+        self.vocab_size = vocab_size
         self.analyze(dialogues)
 
     def analyze(self, dialogues):
@@ -22,3 +25,11 @@ class Properties(dict):
         self['num-utterances'] = len(utterance_lengths)
         
         return
+    
+    def save_properties(self, path):
+        with open(os.path.join(path, 'properties'), 'wb') as f:
+            pickle.dump(self, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def load_properties(path):
+        with open(os.path.join(path, 'properties'), 'rb') as f:
+            return pickle.load(f)

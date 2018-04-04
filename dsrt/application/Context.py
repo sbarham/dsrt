@@ -9,13 +9,15 @@ Maintains a dialogue research application context, which includes (minimally)
 Using this application context, is able to construct any kind of neural dialog model desired.
 """
 
-# import keras
+import keras
+import os
+import shutil
 from pickle import load
 from dsrt.data.transform import Vectorizer
 from dsrt.models import Encoder, Decoder, EncoderDecoder
 from dsrt.config.defaults import DataConfig, ModelConfig, ConversationConfig
 from dsrt.conversation import Conversation
-from dsrt.definitions import ROOT_DIR
+from dsrt.definitions import LIB_DIR
 
 class Context:
     def __init__(self, data_config=DataConfig(), model_config=ModelConfig,
@@ -31,20 +33,39 @@ class Context:
         self.model.fit(self.dataset)
 
     def save_model(self, model_name):
-        self.model.save_models(model_name)
+        self.model_name = model_name
+        self.model_path = os.path.join(LIB_DIR, 'models', model_name)
+        
+        if os.path.exists(self.model_path):
+            choice = input("Model '{}' already exists; overwrite it? y(es) | n(o): ".format(model_name))
+            while True:
+                if choice.lower().startswith('y'):
+                    shutil.rmtree(self.model_path)
+                    os.makedirs(self.model_path)
+                    break
+                elif choice.lower().startswith('n'):
+                    print("Acknowledged; aborting command ...")
+                    exit(1)
+                else:
+                    choice = input("Invalid input. Choose (y)es | (n)o: ")
+        else:
+            os.makedirs(self.model_path)
+            
+        self.model.save_models(self.model_path)
 
     def load_model(self, model_name):
         # load the encoder and decoder inference models
-        prefix = ROOT_DIR + '/archive/models/' + model_name
-        self.training_model = keras.models.load_model(prefix + '_train')
-        self.inference_encoder = keras.models.load_model(prefix + '_inference_encoder')
-        self.inference_decoder = keras.models.load_model(prefix + '_inference_decoder')
-        self.vectorizer = Vectorizer.load(prefix + '_vectorizer')
+        prefix = os.path.join(LIB_DIR, 'models', model_name)
+        
+        self.training_model = keras.models.load_model(os.path.join(prefix, 'train'))
+        self.inference_encoder = keras.models.load_model(os.path.join(prefix, 'inference_encoder'))
+        self.inference_decoder = keras.models.load_model(os.path.join(prefix, 'inference_decoder'))
+        self.vectorizer = Vectorizer.load_vectorizer(prefix)
 
     def build_model(self):
         '''Find out the type of model configured and dispatch the request to the appropriate method'''
         if self.model_config['model-type']:
-            self.model = self.build_red()
+            self.model = self.build_fred()
         elif self.model_config['model-type']:
             self.model = self.buidl_hred()
         else:
@@ -52,9 +73,9 @@ class Context:
 
     def build_fred(self):
         '''Build a flat recurrent encoder-decoder dialogue model'''
-
-        encoder = Encoder(data=self.data, config=self.model_config)
-        decoder = Decoder(data=self.data, config=self.model_config, encoder=encoder)
+        
+        encoder = Encoder(data=self.dataset, config=self.model_config)
+        decoder = Decoder(data=self.dataset, config=self.model_config, encoder=encoder)
 
         return EncoderDecoder(config=self.model_config, encoder=encoder, decoder=decoder)
 
@@ -65,7 +86,10 @@ class Context:
 
         return self.build_red()
 
-    def get_conversation(self):
-        self.load_model(self.conversation_config['model-name'])
+    def get_conversation(self, model_name):
+        if model_name is None:
+            model_name = self.conversation_config['model-name']
+            
+        self.load_model(model_name)
 
-        return Conversation(encoder=self.encoder, decoder=self.decoder, vectorizer=self.vectorizer)
+        return Conversation(encoder=self.inference_encoder, decoder=self.inference_decoder, vectorizer=self.vectorizer)

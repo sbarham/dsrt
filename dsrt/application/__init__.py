@@ -1,5 +1,13 @@
+from . Context import Context
+
+# |
+# v
+
 from . Preprocessor import Preprocessor
 from . Trainer import Trainer
 from . Conversant import Conversant
-from . Context import Context
+
+# |
+# v
+
 from . Application import Application

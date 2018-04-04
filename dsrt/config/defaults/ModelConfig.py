@@ -4,11 +4,14 @@ import logging
 from dsrt.definitions import ROOT_DIR
 from dsrt.config.defaults import BaseConfig
 
-class ModelConfig(BaseConfig):
+class ModelConfig(dict):
     def __init__(self):
+        # add the base configuration
+        self.update(BaseConfig())
+        
         # general model parameters
         self['model-name'] = 'test'
-        self['model-type'] = 'red' # may be 'red' or 'hred' so far
+        self['model-type'] = 'red' # may be 'fred' or 'hred' so far
         self['recurrent-unit-type'] = 'gru'
         self['hierarchical'] = False
 
