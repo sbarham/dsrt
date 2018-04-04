@@ -171,19 +171,6 @@ class Corpus:
     ###################
 
     def save_dataset(self, dataset_name, dataset_path):
-        # record dataset hyperparameters
-        # max_samples = self.config['sample-size']
-        #
-        # all_dialogues = self.config['use-corpus-max-dialogue-length']
-        # all_utterances = self.config['use-corpus-max-utterance-length']
-        #
-        # max_dialogue_length = 'all' if all_dialogues else str(self.config['max-dialogue-length'])
-        # max_utterance_length = 'all' if all_utterances else str(self.config['max-utterance-length'])
-        #
-        # # create dataset name
-        # dataset_name = dataset_name + '_' + max_samples + '_' + max_dialogue_length + '_' + max_utterance_length
-        # dataset_path = ROOT_DIR + '/archive/data/' + dataset_name + '/'
-
         # save dataset
         with h5py.File(os.path.join(dataset_path, 'data'), 'w') as f:
             f.create_dataset('vectorized_corpus', data=self.dialogues)

@@ -1,25 +1,18 @@
-# from dsrt.application import Context
+from dsrt.data import Corpus
 from dsrt.config.defaults import ModelConfig
+from dsrt.application.utils import dataset_exists
 
 class Trainer:
-    def __init__(self, config=ModelConfig()):
+    def __init__(self, dataset_name=None, config=ModelConfig()):
         self.config = config
-
-        return
+        self.dataset_name = dataset_name
+        if dataset_name is None:
+        	self.dataset_name = config['dataset-name']
 
     def run(self):
-        # do stuff
-        pass
-
-    def stuff(self):
-        # TODO:
-        # This function and its helpers will eventually need its own module, because we'll need a better
-        # solution than copying the user preferences to each config in turn
-        self.load_config(args.configuration)
-
-        # Load the corpus
-        self.load_corpus(args.corpus_path, self.data_config)
-        # self.data.save_dataset()
+    	# Load the dataset (perhaps make a set Dataset distinct from Corpus?)
+    	dataset_path = dataset_exists(dataset_name)
+		corpus = Corpus(preprocessed=True, dataset_path=dataset_path)
 
         # Build our application context
         context = Context(model_config=self.model_config, data=self.data)

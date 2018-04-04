@@ -1,16 +1,19 @@
 Near-term:
 
-1) Encoder/decoder split should be made over entire dataset, so it can be loaded in once after preprocessing, and needn't be redone with each train/test split.
+1) create class Dataset, which takes no config and loads only the data saved in a dataset directory
+x Encoder/decoder split should be made over entire dataset, so it can be loaded in once after preprocessing, and needn't be redone with each train/test split.
 2) saving/loading utilities need to be informally tested
-3) 'prepare' command needs to be written (i.e., args added and tested)
-4) (Preprocessor) class needs to be written and tested
-4) proprocessing needs to be tested using the command-line utility
+x 'prepare' command needs to be written (i.e., args added and tested)
+x (Preprocessor) class needs to be written and tested
+x preprocessing needs to be tested using the command-line utility
 5) a large model needs to be trained and tested to prove the (provisional) soundness of the command-line tool
 6) the interactive wizards need to be sketched out and begun
 
 Longer-term:
 1) HRED model needs to be written and tested
 2) VHRED model needs to be written and tested
+3) Bidirectionality needs to be implemented
+4) Attention needs to be implemented
 
 Even longer-term:
 1) explore knowledge-sensitive dialogue models
