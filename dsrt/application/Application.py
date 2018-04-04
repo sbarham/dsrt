@@ -243,7 +243,7 @@ Try these commands with -h (or --help) for more information.'''
         '''Only invoked conditionally if subcommand is 'train' '''
         parser.add_argument('-f', '--configuration', dest='config', default=DEFAULT_USER_CONFIG_PATH,
                             help='the path to the configuration file to use -- ./config.yaml by default')
-        parser.add_argument('-c', '--corpus-name', help='the name of the corpus or saved dataset to train on')
+        parser.add_argument('-c', '--dataset-name', help='the name of the corpus or saved dataset to train on')
 
     def init_converse_args(self, parser):
         '''Only invoked conditionally if subcommand is 'converse' '''
