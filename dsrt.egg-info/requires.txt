@@ -1,2 +1,3 @@
 dsrt
 h5py
+progressbar2

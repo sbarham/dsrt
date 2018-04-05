@@ -21,7 +21,8 @@ setup(
     
     install_requires=[
         'dsrt',
-        'h5py'
+        'h5py',
+        'progressbar2'
     ],
 
     entry_points={

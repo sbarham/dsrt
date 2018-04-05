@@ -20,32 +20,30 @@ class Filter:
         
         # for filtering out long dialogues and utterances, we'll need these settings:
         max_dl = self.config['max-dialogue-length']
-        use_max_dl = not (self.config['use-corpus-max-dialogue-length'])
+        filter_dialogues = self.config['filter-long-dialogues'] 
         max_ul = self.config['max-utterance-length']
-        use_max_ul = not (self.config['use-corpus-max-utterance-length'])
+        filter_utterances = self.config['filter-dialogues-with-long-utterances']
         
         filtered_dialogues = []
         
-        # if we're putting a limit on dialogue length, 
-        # iterate through the dialogues ...
-        if use_max_dl:
-            for dialogue in dialogues:
-                # skip it if we're filtering out long dialogues and this one is too long
-                if len(dialogue) > max_dl:
-                    continue
+        for dialogue in dialogues:
+            # skip it if we're filtering out long dialogues and this one is too long
+            if filter_dialogues and len(dialogue) > max_dl:
+                continue
 
-                # if we're putting a limit on utterance length, 
-                # iterate through utterances in this dialogue ...
-                keep_dia = True
-                if use_max_ul:
-                    for utterance in dialogue:
-                        # if an utterance is too long, mark this dialogue for exclusion
-                        if len(utterance) > max_ul:
-                            keep_dia = False
-                            break
-                            
-                if keep_dia:
-                    filtered_dialogues += [dialogue]
+            # if we're putting a limit on utterance length, 
+            # iterate through utterances in this dialogue ...
+            keep_dia = True
+            if filter_utterances:
+                for utterance in dialogue:
+                    # if an utterance is too long, mark this dialogue for exclusion
+                    if len(utterance) > max_ul:
+                        keep_dia = False
+                        break
+                
+            # this dialogue was not too long (or we're not filtering); keep it
+            if keep_dia:
+                filtered_dialogues += [dialogue]
         
         return filtered_dialogues
     

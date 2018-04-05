@@ -84,7 +84,8 @@ class Corpus:
 
         if not self.corpus_loaded:
             with open(path, 'r') as f:
-                dialogues = [l.lower() for l in list(f)]
+                dialogues = list(f)
+                # dialogues = [l.lower() for l in list(f)]
 
         return self.tokenizer.transform(dialogues)
 

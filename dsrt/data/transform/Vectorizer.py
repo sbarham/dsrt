@@ -8,6 +8,7 @@ import logging
 import os
 import pickle
 import copy
+import progressbar
 
 from dsrt.config.defaults import DataConfig
 
@@ -59,10 +60,25 @@ class Vectorizer:
         return
 
     def transform(self, dialogues, ohe=False):
-        if not ohe:
-            return self.vectorize_dialogues(dialogues)
-        else:
-            return self.vectorize_dialogues_ohe(dialogues)
+        self.log('info', 'Vectorizing dialogues (this may take a while) ...')
+        
+        # this can be a very long operation; we'll track progress with a progressbar ...
+        bar = progressbar.ProgressBar(widgets=[
+            ' [', progressbar.Timer(), '] ',
+            progressbar.Bar(),
+            ' (', progressbar.ETA(), ') ',
+        ])
+        
+        num_dialogues = len(dialogues)
+        
+        res = []
+        for i, d in enumerate(dialogues):
+            res.append(self.vectorize_dialogue(d))
+            bar.update(100 * (i / num_dialogues))
+        
+        print()
+        
+        return np.array(res)
 
 
     #################################
@@ -73,6 +89,7 @@ class Vectorizer:
         """
         Take in a list of dialogues and vectorize them all
         """
+        
         return np.array([self.vectorize_dialogue(d) for d in dialogues])
 
     def vectorize_dialogue(self, dialogue):
