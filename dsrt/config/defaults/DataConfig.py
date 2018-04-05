@@ -42,17 +42,17 @@ class DataConfig(dict):
         # memory restricted environments, or to speed up testing:
         self['restrict-sample-size'] = True
 
-        self['sample-size'] = 10 # restrict the number of dialogues to an arbitrary number
+        self['sample-size'] = 1000 # restrict the number of dialogues to an arbitrary number
 
 
         # use the max lengths already present in the corpus in case the user doesn't provide values
         # (this is usually preferred)
-        self['use-corpus-max-utterance-length'] = False
-        self['use-corpus-max-dialogue-length'] = False
+        self['filter-dialogues-with-long-utterances'] = True
+        self['filter-long-dialogues'] = False
         # with a default setting of 20x100 dialogues, a one-hot encoded
         # dialogue occupies about 160MB of space in memory
         self['max-utterance-length'] = 40
-        self['max-dialogue-length'] = 10
+        self['max-dialogue-length'] = None #10
 
         self['train-test-split'] = .8
 
