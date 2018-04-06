@@ -5,10 +5,12 @@ from dsrt.application.utils import dataset_exists
 
 class Trainer:
     def __init__(self, dataset_name=None, saved_model_name=None, new_model_name=None,
-                config=ModelConfig()):
+                num_gpus=1, config=ModelConfig()):
         self.config = config
+        self.num_gpus = num_gpus
         self.dataset_name = dataset_name
         self.saved_model_name = saved_model_name
+        
         if dataset_name is None:
             self.dataset_name = config['dataset-name']
         if new_model_name is None:
@@ -21,7 +23,7 @@ class Trainer:
         dataset.load_dataset(dataset_path)
 
         # Build our application context
-        context = Context(model_config=self.config, dataset=dataset)
+        context = Context(model_config=self.config, dataset=dataset, num_gpus=self.num_gpus)
 
         # Build or load the model
         if self.saved_model_name is None:

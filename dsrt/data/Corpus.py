@@ -25,7 +25,7 @@ from math import ceil
 # our own imports
 from dsrt.config.defaults import DataConfig
 from dsrt.data import DataSet, SampleSet, Properties
-from dsrt.data.transform import Tokenizer, Filter, Padder, AdjacencyPairer, Vectorizer, EncoderDecoderSplitter
+from dsrt.data.transform import Tokenizer, Filter, Padder, AdjacencyPairer, Vectorizer, Masker, EncoderDecoderSplitter
 from dsrt.definitions import ROOT_DIR
 
 class Corpus:
@@ -59,16 +59,17 @@ class Corpus:
 
         # gather dataset properties
         self.properties = Properties(self.dialogues, self.vocab_size, self.config)
-        self.vectorizer = Vectorizer(self.word_list, self.properties, self.config)
+        self.vectorizer = Vectorizer(self.word_list, self.properties, config=self.config)
         self.add_reserved_words(self.properties, self.vectorizer)
 
         # create the data transformers
-        self.filter = Filter(self.properties, self.config)
-        self.padder = Padder(self.properties, self.config)
-        self.pairer = AdjacencyPairer(self.properties, self.config)
+        self.filter = Filter(self.properties, config=self.config)
+        self.padder = Padder(self.properties, config=self.config)
+        self.pairer = AdjacencyPairer(self.properties, config=self.config)
+        self.masker = Masker(self.vectorizer, self.properties, config=self.config)
         self.enc_dec_splitter = EncoderDecoderSplitter(self.properties, self.vectorizer, self.config)
 
-        self.transformers = [self.filter, self.padder, self.pairer, self.vectorizer]
+        self.transformers = [self.filter, self.padder, self.pairer, self.vectorizer, self.masker]
 
         # report success!
         self.log('info', 'Corpus succesfully loaded!\n')

@@ -8,15 +8,18 @@ import logging
 import os
 import pickle
 import copy
-import progressbar
+# import progressbar
+import tqdm
+from multiprocessing import Pool
 
 from dsrt.config.defaults import DataConfig
 
 class Vectorizer:
-    def __init__(self, vocab_list, properties, config=DataConfig()):
+    def __init__(self, vocab_list, properties=None, parallel=True, config=DataConfig()):
         self.config = config
         self.vocab_list = vocab_list
         self.properties = properties
+        self.parallel = parallel
 
         # initialize the logger
         self.init_logger()
@@ -39,11 +42,6 @@ class Vectorizer:
         """
         Initialize the integer encoder and the one-hot encoder, fitting them to the vocabulary
         of the corpus.
-
-        NB:
-        From here on out,
-            - 'ie' stands for 'integer encoded', and
-            - 'ohe' stands for 'one-hot encoded'
         """
         self.log('info', 'Initializing the encoders ...')
 
@@ -51,32 +49,25 @@ class Vectorizer:
         self.ie = LabelEncoder()
         self.ie_vocab = self.ie.fit_transform(self.vocab_list)
 
-        self.pad_u_index = self.ie.transform([self.pad_u])[0]
-
-        # create the OHE encoder and fit it to our corpus' vocab
-        self.ohe = OneHotEncoder(sparse=False)
-        self.ohe_vocab = self.ohe.fit_transform(self.ie_vocab.reshape(len(self.ie_vocab), 1))
-
-        return
-
-    def transform(self, dialogues, ohe=False):
+    def transform(self, dialogues, ohe=False, from_corpus=True):
         self.log('info', 'Vectorizing dialogues (this may take a while) ...')
-        
-        # this can be a very long operation; we'll track progress with a progressbar ...
-        bar = progressbar.ProgressBar(widgets=[
-            ' [', progressbar.Timer(), '] ',
-            progressbar.Bar(),
-            ' (', progressbar.ETA(), ') ',
-        ])
-        
-        num_dialogues = len(dialogues)
-        
+
+        chunksize=self.config['chunksize']
+        p = Pool() if self.parallel else Pool(1)
         res = []
-        for i, d in enumerate(dialogues):
-            res.append(self.vectorize_dialogue(d))
-            bar.update(100 * (i / num_dialogues))
-        
-        print()
+        total=len(dialogues)
+
+        self.log('info', '[vectorizer operating on {} cores]'.format(p._processes))
+
+        if from_corpus:
+            for d in tqdm.tqdm(p.imap(self.vectorize_dialogue_unsafe, dialogues, chunksize=chunksize), total=total):
+                res.append(d)
+        else:
+            for d in tqdm.tqdm(p.imap(self.vectorize_dialogue_safe, dialogues, chunksize=chunksize), total=total):
+                res.append(d)
+
+        p.close()
+        p.join()
         
         return np.array(res)
 
@@ -89,25 +80,43 @@ class Vectorizer:
         """
         Take in a list of dialogues and vectorize them all
         """
-        
-        return np.array([self.vectorize_dialogue(d) for d in dialogues])
+        return [self.vectorize_dialogue(d) for d in dialogues]
 
-    def vectorize_dialogue(self, dialogue):
+    def vectorize_dialogue(self, dialogue, safe=True):
         """
         Take in a dialogue (a sequence of tokenized utterances) and transform it into a
         sequence of sequences of indices
         """
-        return np.array([self.vectorize_utterance(u) for u in dialogue])
+        if safe:
+            return vectorize_dialogue_safe(dialogue)
+        else:
+            return vectorize_dialogue_unsafe(dialogue)
+        
+    def vectorize_dialogue_safe(self, dialogue):
+        return [self.vectorize_utterance_safe(u) for u in dialogue]
+    
+    def vectorize_dialogue_unsafe(self, dialogue):
+        return [self.vectorize_utterance_unsafe(u) for u in dialogue]
 
-    def vectorize_utterance(self, utterance):
+
+    def vectorize_utterance(self, utterance, safe=True):
         """
         Take in a tokenized utterance and transform it into a sequence of indices
         """
+        if safe:
+            return vectorize_utterance_safe(utterance)
+        else:
+            return vectorize_utterance_unsafe(utterance)
+        
+    def vectorize_utterance_safe(self, utterance):
         for i, word in enumerate(utterance):
             if not word in self.vocab_list:
                 utterance[i] = '<unk>'
 
-        return np.array(self.swap_pad_and_zero(self.ie.transform(utterance)))
+        return self.ie.transform(utterance)
+        
+    def vectorize_utterance_unsafe(self, utterance):
+        return self.ie.transform(utterance)
 
     def devectorize_dialogues(self, dialogues):
         """
@@ -125,97 +134,14 @@ class Vectorizer:
         """
         Take in a sequence of indices and transform it back into a tokenized utterance
         """
-        utterance = self.swap_pad_and_zero(utterance)
         return self.ie.inverse_transform(utterance).tolist()
 
     def word_to_index(self, word):
-        return self.swap_pad_and_zero(self.ie.transform([word]))[0]
+        return self.ie.transform([word])[0]
 
     def index_to_word(self, index):
-        return self.ie.inverse_transform(self.swap_pad_and_zero([index]))[0]
-
-
-    #################################
-    #       OHE VECTORIZATION       #
-    #################################
-
-    def vectorize_batch_ohe(self, batch):
-        """
-        One-hot vectorize a whole batch of dialogues
-        """
-        return np.array([self.vectorize_dialogue_ohe(dia) for dia in batch])
-
-    def vectorize_dialogue_ohe(self, dia):
-        """
-        Take in a dialogue (a sequence of tokenized utterances) and transform it into a
-        sequence of sequences of one-hot vectors
-        """
-        # we squeeze it because it's coming out with an extra empty
-        # dimension at the front of the shape: (1 x dia x utt x word)
-        return np.array([[self.vectorize_utterance_ohe(utt) for utt in dia]]).squeeze()
-
-    def vectorize_utterance_ohe(self, utterance):
-        """
-        Take in a tokenized utterance and transform it into a sequence of one-hot vectors
-        """
-        for i, word in enumerate(utterance):
-            if not word in self.vocab_list:
-                utterance[i] = '<unk>'
-
-        ie_utterance = self.swap_pad_and_zero(self.ie.transform(utterance))
-        ohe_utterance = np.array(self.ohe.transform(ie_utterance.reshape(len(ie_utterance), 1)))
-
-        return ohe_utterance
-
-    def devectorize_dialogue_ohe(self, ohe_dialogue):
-        """
-        Take in a dialogue of ohe utterances and transform them into a tokenized dialogue
-        """
-        return [self.devectorize_utterance_ohe(u) for u in ohe_dialogue]
-
-    def devectorize_utterance_ohe(self, ohe_utterance):
-        """
-        Take in a sequence of one-hot vectors and transform it into a tokenized utterance
-        """
-        ie_utterance = [argmax(w) for w in ohe_utterance]
-        utterance = self.ie.inverse_transform(self.swap_pad_and_zero(ie_utterance))
-
-        return utterance
-
-
-    ##############################
-    #      IE-to-OHE Encoding    #
-    ##############################
-
-    def ie_to_ohe_dialogue(self, dialogue):
-        return np.array([self.ie_to_ohe_utterance(u) for u in dialogue])
-
-    def ie_to_ohe_utterances(self, dialogue):
-        return np.array([self.ie_to_ohe_utterance(u) for u in dialogue])
-
-    def ie_to_ohe_utterance(self, utterance):
-        return self.ohe.transform(utterance.reshape(len(utterance), 1))
-
-
-    ###################
-    #     MASKING     #
-    ###################
-
-    def swap_pad_and_zero(self, utterance):
-        # This is currently destructive, because the numpy arrays it deals with
-        # are not copies. UGH imperative programming ...
-        if isinstance(utterance, np.ndarray):
-            utterance = utterance.tolist()
-        else:
-            utterance = copy.deepcopy(utterance)
-
-        for i, w in enumerate(utterance):
-            if w == 0:
-                utterance[i] = self.pad_u_index
-            elif w == self.pad_u_index:
-                utterance[i] = 0
-
-        return utterance
+        return self.ie.inverse_transform([index])[0]
+    
 
     ####################
     #     UTILITIES    #

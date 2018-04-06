@@ -21,22 +21,22 @@ class EncoderDecoderSplitter:
 
     def encoder_decoder_split(self, dialogues):
         """
-	    For now, this assumes a flat (non-hierarchical) model, and therefore
-	    assumes that dialogues are simply adjacency pairs.
-	    """
+        For now, this assumes a flat (non-hierarchical) model, and therefore
+        assumes that dialogues are simply adjacency pairs.
+        """
         self.log('info', 'Making encoder decoder split ...')
 
-	    # get start, stop, and pad symbols
+        # get start, stop, and pad symbols
         start = self.properties.start
         stop = self.properties.stop
         pad = self.properties.pad_u
 
-	    # initialize encoder/decoder samples
+        # initialize encoder/decoder samples
         encoder_x = np.copy(dialogues[:, 0])
         decoder_x = np.zeros(encoder_x.shape)
         decoder_y = np.copy(dialogues[:, 1])
 
-	    # prepare decoder_x -- (prefix the <start> symbol to every second-pair part)
+        # prepare decoder_x -- (prefix the <start> symbol to every second-pair part)
         decoder_x[:, 0] = start
         for i in range(decoder_y.shape[0]):
             for j in range(decoder_y.shape[1] - 1):
@@ -53,7 +53,7 @@ class EncoderDecoderSplitter:
 
         return [encoder_x, decoder_x, decoder_y]
 
-	####################
+    ####################
     #     UTILITIES    #
     ####################
 

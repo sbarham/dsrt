@@ -21,12 +21,14 @@ from dsrt.definitions import LIB_DIR
 
 class Context:
     def __init__(self, data_config=DataConfig(), model_config=ModelConfig,
-                 conversation_config=ConversationConfig(), dataset=None):
+                 conversation_config=ConversationConfig(), dataset=None,
+                 num_gpus=1):
         self.data_config = data_config
         self.model_config = model_config
         self.conversation_config = conversation_config
 
         self.dataset = dataset
+        self.num_gpus = num_gpus
         self.model = None
 
     def train(self):
@@ -77,7 +79,7 @@ class Context:
         encoder = Encoder(data=self.dataset, config=self.model_config)
         decoder = Decoder(data=self.dataset, config=self.model_config, encoder=encoder)
 
-        return EncoderDecoder(config=self.model_config, encoder=encoder, decoder=decoder)
+        return EncoderDecoder(config=self.model_config, encoder=encoder, decoder=decoder, num_gpus=self.num_gpus)
 
     def build_hred(self):
         '''Build a hierarchical recurrent encoder-decoder dialogue model'''

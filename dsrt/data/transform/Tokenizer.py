@@ -1,31 +1,31 @@
 import logging
 from nltk import word_tokenize
-import progressbar
+# import progressbar
+import tqdm
+from multiprocessing import Pool
 from dsrt.config.defaults import DataConfig
 
 class Tokenizer:
-    def __init__(self, config=DataConfig()):
+    def __init__(self, parallel=True, config=DataConfig()):
         self.config = config
         self.init_logger()
+        self.parallel = parallel
 
     def transform(self, dialogues):
         self.log('info', 'Tokenizing the dialogues (this may take a while) ...')
-        
-        # this can be a very long operation; we'll track progress with a progressbar ...
-        bar = progressbar.ProgressBar(widgets=[
-            ' [', progressbar.Timer(), '] ',
-            progressbar.Bar(),
-            ' (', progressbar.ETA(), ') ',
-        ])
-        
-        num_dialogues = len(dialogues)
-        
+
+        chunksize=self.config['chunksize']
+        p = Pool()
         res = []
-        for i, d in enumerate(dialogues):
-            res.append(self.tokenize_dialogue(d))
-            bar.update(100 * (i / num_dialogues))
-        
-        print()
+        total=len(dialogues)
+
+        self.log('info', '[tokenizer running on {} cores]'.format(p._processes))
+
+        for d in tqdm.tqdm(p.imap(self.tokenize_dialogue, dialogues, chunksize=chunksize), total=total):
+            res.append(d)
+
+        p.close()
+        p.join()
         
         return res
 
@@ -33,7 +33,7 @@ class Tokenizer:
         return [self.tokenize_dialogue(d) for d in dialogues]
 
     def tokenize_dialogue(self, dialogue):
-        utterances = dialogue.split('\t') # [:-1]
+        utterances = dialogue.split('\t')
         return [self.tokenize_utterance(u) for u in utterances]
 
     def tokenize_utterance(self, utterance):

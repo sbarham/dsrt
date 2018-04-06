@@ -1,11 +1,14 @@
+import tqdm
+from multiprocessing import Pool
 import logging
 
 from dsrt.config.defaults import DataConfig
 
 class Filter:
-    def __init__(self, properties, config=DataConfig()):
+    def __init__(self, properties, parallel=True, config=DataConfig()):
         self.properties = properties
         self.config = config
+        self.parallel = parallel
         self.init_logger()
         
     def init_logger(self):
@@ -13,39 +16,50 @@ class Filter:
         self.logger.setLevel(self.config['logging-level'])
 
     def transform(self, dialogues):
-        return self.filter_dialogues_by_length(dialogues)
-
-    def filter_dialogues_by_length(self, dialogues):
-        self.log('info', 'Filtering out long samples ...')
+        chunksize=self.config['chunksize']
+        p = Pool() if self.parallel else Pool(1)
         
-        # for filtering out long dialogues and utterances, we'll need these settings:
-        max_dl = self.config['max-dialogue-length']
-        filter_dialogues = self.config['filter-long-dialogues'] 
-        max_ul = self.config['max-utterance-length']
-        filter_utterances = self.config['filter-dialogues-with-long-utterances']
-        
-        filtered_dialogues = []
-        
-        for dialogue in dialogues:
-            # skip it if we're filtering out long dialogues and this one is too long
-            if filter_dialogues and len(dialogue) > max_dl:
-                continue
-
-            # if we're putting a limit on utterance length, 
-            # iterate through utterances in this dialogue ...
-            keep_dia = True
-            if filter_utterances:
-                for utterance in dialogue:
-                    # if an utterance is too long, mark this dialogue for exclusion
-                    if len(utterance) > max_ul:
-                        keep_dia = False
-                        break
+        if self.config['filter-long-dialogues']:
+            self.max_dl = self.config['max-dialogue-length']
+            self.log('info', 'Filtering long dialogues (> {} utterances) ...'.format(self.max_dl))
+            
+            res = []
+            total = len(dialogues)
+            
+            self.log('info', '[filter running on {} cores]'.format(p._processes))
+            for d in tqdm.tqdm(p.imap(self.filter_long_dialogues, dialogues, chunksize=chunksize), total=total):
+                res.append(d)
+            
+            dialogues = list(filter(None, res))
+            
+        if self.config['filter-dialogues-with-long-utterances']:
+            self.max_ul = self.config['max-utterance-length']
+            self.log('info', 'Filtering dialogues with long utterances (> {} tokens) ...'.format(self.max_ul))
+            
+            res = []
+            total = len(dialogues)
+            
+            self.log('info', '[filter running on {} cores]'.format(p._processes))
+            for d in tqdm.tqdm(p.imap(self.filter_dialogues_with_long_utterances, dialogues, chunksize=chunksize), total=total):
+                res.append(d)
                 
-            # this dialogue was not too long (or we're not filtering); keep it
-            if keep_dia:
-                filtered_dialogues += [dialogue]
+            dialogues = list(filter(None, res))
+
+        p.close()
+        p.join()
+
+        return dialogues
+
+    def filter_long_dialogues(self, dialogue):
+        if len(dialogue) > self.max_dl:
+            return None
         
-        return filtered_dialogues
+    def filter_dialogues_with_long_utterances(self, dialogue):
+        for utterance in dialogue:
+            if len(utterance) > self.max_ul:
+                return None
+                
+        return dialogue
     
     ####################
     #     UTILITIES    #

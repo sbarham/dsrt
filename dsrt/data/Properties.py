@@ -9,22 +9,23 @@ class Properties(dict):
         self.analyze(dialogues)
 
     def analyze(self, dialogues):
-        dialogue_lengths = []
-        utterance_lengths = []
-
-        for dialogue in dialogues:
-            # get dialogue length
-            dialogue_lengths += [len(dialogue)]
-
-            # get constituent utterances lengths
-            utterance_lengths += [len(u) for u in dialogue]
-
-        self['max-dialogue-length'] = max(dialogue_lengths)
-        self['max-utterance-length'] = max(utterance_lengths)
+        # get num dialogues and max dialogue length
+        dialogue_lengths = [len(d) for d in dialogues]
         self['num-dialogues'] = len(dialogue_lengths)
+        
+        if self.config['filter-long-dialogues']:
+            self['max-dialogue-length'] = self.config['max-dialogue-length']
+        else:
+            self['max-dialogue-length'] = max(dialogue_lengths)
+        
+        # get num utterances and max utterance length
+        utterance_lengths = [len(u) for d in dialogues for u in d]
         self['num-utterances'] = len(utterance_lengths)
         
-        return
+        if self.config['filter-dialogues-with-long-utterances']:
+            self['max-utterance-length'] = self.config['max-utterance-length']
+        else:
+            self['max-utterance-length'] = max(utterance_lengths)
     
     def save_properties(self, path):
         with open(os.path.join(path, 'properties'), 'wb') as f:

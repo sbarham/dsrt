@@ -246,6 +246,7 @@ Try these commands with -h (or --help) for more information.'''
         parser.add_argument('-c', '--dataset-name', help='the name of the saved dataset to train on')
         parser.add_argument('-s', '--saved-model-name', help='the name of the saved model to continue training')
         parser.add_argument('-n', '--new-model-name', help='the name to give the newly trained model')
+        parser.add_argument('-g', '--gpus', dest='num_gpus', type=int, default=1, help='the number of gpus to use during training')
 
     def init_converse_args(self, parser):
         '''Only invoked conditionally if subcommand is 'converse' '''

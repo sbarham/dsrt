@@ -1,11 +1,18 @@
 import logging
+import tqdm
+from multiprocessing import Pool
 
 from dsrt.config.defaults import DataConfig
 
 class Padder:
-    def __init__(self, properties, config=DataConfig()):
+    def __init__(self, properties, parallel=True, config=DataConfig()):
         self.properties = properties
         self.config = config
+        self.parallel = parallel
+        
+        self.max_ulen = self.properties['max-utterance-length']
+        self.max_dlen = self.properties['max-dialogue-length']
+        
         self.init_logger()
         
     def init_logger(self):
@@ -13,7 +20,24 @@ class Padder:
         self.logger.setLevel(self.config['logging-level'])
 
     def transform(self, dialogues):
-        return self.pad_dialogues(dialogues)
+        self.log('info', 'Padding the dialogues (using max utterance length={} tokens) ...'.format(self.max_ulen))
+
+        self.empty_turn = [self.config['pad-d']] * (self.properties['max-utterance-length'] + 1)
+
+        chunksize=self.config['chunksize']
+        p = Pool() if self.parallel else Pool(1)
+        res = []
+        total = len(dialogues)
+
+        self.log('info', '[padder running on {} cores]'.format(p._processes))
+
+        for d in tqdm.tqdm(p.imap(self.pad_dialogue, dialogues, chunksize=chunksize), total=total):
+            res.append(d)
+
+        p.close()
+        p.join()
+        
+        return res
 
     def pad_dialogues(self, dialogues):
         """
@@ -25,19 +49,19 @@ class Padder:
         
         self.log('info', 'Padding the dialogues ...')
         
-        empty_turn = [self.config['pad-d']] * (self.properties['max-utterance-length'] + 1)
-        
-        for i, d in enumerate(dialogues):
-            for j, u in enumerate(d):
-                dif = self.properties['max-utterance-length'] - len(u) + 1
-                dialogues[i][j] += [self.config['pad-u']] * dif
+        return [self.pad_dialogue(d) for d in dialogues]
+
+    def pad_dialogue(self, dialogue):
+        for i, u in enumerate(dialogue):
+            dif = self.max_ulen - len(u) + 1
+            dialogue[i] += [self.config['pad-u']] * dif
                 
-            # only pad the dialogue if we're training a hierarchical model
-            if self.config['hierarchical']:
-                dif = self.properties['max-dialogue-length'] - len(d)
-                dialogues[i] += [empty_turn] * dif
-        
-        return dialogues
+        # only pad the dialogue if we're training a hierarchical model
+        if self.config['hierarchical']:
+            dif = self.max_dlen - len(dialogue)
+            dialogues += [self.empty_turn] * dif
+
+        return dialogue
     
     ####################
     #     UTILITIES    #

@@ -5,6 +5,12 @@ Represents an encoder-decoder dialogue model
 # Keras packages
 from keras.models import Model
 from keras.layers import Input, Embedding, LSTM, GRU, Dense, Bidirectional
+from keras.utils.training_utils import multi_gpu_model
+from keras.callbacks import ModelCheckpoint
+
+# we need Tensforflow to save a central copy of the model on our CPU, from which
+# we spawn multiple copies on any available (indicated) GPUs
+import tensorflow as tf
 
 # nltk
 from nltk import word_tokenize
@@ -18,20 +24,30 @@ import math
 import re
 
 # Our packages
-from dsrt.definitions import LIB_DIR
+from dsrt.definitions import LIB_DIR, CHECKPOINT_DIR
 from dsrt.config.defaults import ModelConfig
-from dsrt.definitions import ROOT_DIR
 
 
 class EncoderDecoder:
-    def __init__(self, encoder=None, decoder=None, config=ModelConfig()):
+    def __init__(self, encoder=None, decoder=None, config=ModelConfig(), num_gpus=1):
         self.config = config
         self.encoder = encoder
         self.decoder = decoder
+        self.num_gpus = num_gpus
         
         # build the trainin and inference models; save them
+        self.build_callbacks()
         self.build_training_model()
         self.build_inference_model()
+        
+    def build_callbacks(self):
+        '''Eventually, this should be configured, rather than hardcoded'''
+        # checkpoint
+        filepath = os.path.join(CHECKPOINT_DIR, 'weights.best.hdf5')
+        checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='auto')
+                                
+                                
+        self.callbacks = [checkpoint]
         
     def build_training_model(self):
         self.encoder_input = self.encoder.encoder_input
@@ -41,10 +57,20 @@ class EncoderDecoder:
         self.decoder_output = self.decoder.decoder_output
         
         if self.config['hierarchical']:
-            # do something
-            pass
+            pass # do something
         else:
-            self.training_model = Model([self.encoder_input, self.decoder_input], self.decoder_output)
+            if self.num_gpus <= 1:
+                print("[INFO] training with 1 GPU...")
+                self.training_model = Model([self.encoder_input, self.decoder_input], self.decoder_output)
+            else:
+                print("[INFO] training with {} GPUs...".format(self.num_gpus))
+                # we'll store a copy of the model on *every* GPU and then combine
+                # the results from the gradient updates on the CPU
+                with tf.device("/cpu:0"):
+                    model = Model([self.encoder_input, self.decoder_input], self.decoder_output)
+                
+                # make the model parallel
+                self.training_model = multi_gpu_model(model, gpus=self.num_gpus)
     
     def build_inference_model(self):
         # grab some important hyperparameters
@@ -80,6 +106,10 @@ class EncoderDecoder:
                                    [decoder_output] + decoder_hidden_state_output)
     
     def fit(self, data):
+        # ensure the checkpoint dir exists
+        if not os.path.exists(CHECKPOINT_DIR):
+            os.makedirs(CHECKPOINT_DIR)
+                                
         # grab some hyperparameters from our config
         optimizer = self.config['optimizer']
         loss = self.config['loss']
@@ -91,12 +121,13 @@ class EncoderDecoder:
         encoder_x = data.train.encoder_x
         decoder_x = data.train.decoder_x
         decoder_y = data.train.decoder_y #_ohe
-        
+    
         self.training_model.compile(optimizer=optimizer, loss=loss)
         self.training_model.fit([encoder_x, decoder_x], decoder_y,
                                 batch_size=batch_size,
                                 epochs=num_epochs,
-                                validation_split=validation_split)
+                                validation_split=validation_split,
+                                callbacks=self.callbacks)
         
         # remember the vectorizer used in training
         self.vectorizer = data.vectorizer

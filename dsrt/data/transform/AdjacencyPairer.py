@@ -1,9 +1,12 @@
+import tqdm
+from multiprocessing import Pool
 import logging
 from dsrt.config.defaults import DataConfig
 
 class AdjacencyPairer:
-    def __init__(self, properties, config=DataConfig()):        
+    def __init__(self, properties, parallel=True, config=DataConfig()):
         self.properties = properties
+        self.parallel = parallel
         self.config = config
         
         # initialize the logger
@@ -15,7 +18,19 @@ class AdjacencyPairer:
     
     def transform(self, dialogues):
         self.log('info', 'Flattening dialogues into adjacency pairs ...')
-        return self.dialogues_to_adjacency_pairs(dialogues)
+
+        chunksize=self.config['chunksize']
+        p = Pool() if self.parallel else Pool(1)
+        res = []
+        total = len(dialogues)
+
+        for d in tqdm.tqdm(p.imap(self.dialogue_to_adjacency_pairs, dialogues, chunksize=chunksize), total=total):
+            res += d
+
+        p.close()
+        p.join()
+        
+        return res
 
     def dialogues_to_adjacency_pairs(self, dialogues):
         return [ap for d in dialogues for ap in self.dialogue_to_adjacency_pairs(d)]
