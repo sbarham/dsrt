@@ -80,6 +80,7 @@ class Context:
         decoder = Decoder(data=self.dataset, config=self.model_config, encoder=encoder)
 
         return EncoderDecoder(config=self.model_config, encoder=encoder, decoder=decoder, num_gpus=self.num_gpus)
+        return EncoderDecoder(config=self.model_config, encoder=encoder, decoder=decoder)
 
     def build_hred(self):
         '''Build a hierarchical recurrent encoder-decoder dialogue model'''

@@ -24,12 +24,22 @@ import math
 import re
 
 # Our packages
+<<<<<<< HEAD
 from dsrt.definitions import LIB_DIR, CHECKPOINT_DIR
 from dsrt.config.defaults import ModelConfig
 
 
 class EncoderDecoder:
     def __init__(self, encoder=None, decoder=None, config=ModelConfig(), num_gpus=1):
+=======
+from dsrt.definitions import LIB_DIR
+from dsrt.config.defaults import ModelConfig
+from dsrt.definitions import ROOT_DIR
+
+
+class EncoderDecoder:
+    def __init__(self, encoder=None, decoder=None, config=ModelConfig()):
+>>>>>>> 862dff8777db5d01aa74b25c93cb60f1514e208d
         self.config = config
         self.encoder = encoder
         self.decoder = decoder
@@ -40,6 +50,7 @@ class EncoderDecoder:
         self.build_training_model()
         self.build_inference_model()
         
+<<<<<<< HEAD
     def build_callbacks(self):
         '''Eventually, this should be configured, rather than hardcoded'''
         # checkpoint
@@ -49,6 +60,8 @@ class EncoderDecoder:
                                 
         self.callbacks = [checkpoint]
         
+=======
+>>>>>>> 862dff8777db5d01aa74b25c93cb60f1514e208d
     def build_training_model(self):
         self.encoder_input = self.encoder.encoder_input
         self.encoder_embed = self.encoder.encoder_embed
@@ -121,13 +134,21 @@ class EncoderDecoder:
         encoder_x = data.train.encoder_x
         decoder_x = data.train.decoder_x
         decoder_y = data.train.decoder_y #_ohe
+<<<<<<< HEAD
     
+=======
+        
+>>>>>>> 862dff8777db5d01aa74b25c93cb60f1514e208d
         self.training_model.compile(optimizer=optimizer, loss=loss)
         self.training_model.fit([encoder_x, decoder_x], decoder_y,
                                 batch_size=batch_size,
                                 epochs=num_epochs,
+<<<<<<< HEAD
                                 validation_split=validation_split,
                                 callbacks=self.callbacks)
+=======
+                                validation_split=validation_split)
+>>>>>>> 862dff8777db5d01aa74b25c93cb60f1514e208d
         
         # remember the vectorizer used in training
         self.vectorizer = data.vectorizer

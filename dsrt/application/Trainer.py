@@ -4,8 +4,7 @@ from dsrt.application import Context
 from dsrt.application.utils import dataset_exists
 
 class Trainer:
-    def __init__(self, dataset_name=None, saved_model_name=None, new_model_name=None,
-                num_gpus=1, config=ModelConfig()):
+    def __init__(self, dataset_name=None, saved_model_name=None, new_model_name=None, num_gpus=1, config=ModelConfig()):
         self.config = config
         self.num_gpus = num_gpus
         self.dataset_name = dataset_name
@@ -23,6 +22,7 @@ class Trainer:
         dataset.load_dataset(dataset_path)
 
         # Build our application context
+ 
         context = Context(model_config=self.config, dataset=dataset, num_gpus=self.num_gpus)
 
         # Build or load the model

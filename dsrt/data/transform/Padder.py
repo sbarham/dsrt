@@ -45,8 +45,7 @@ class Padder:
         This involves adding padding at the end of each sentence, and in the case of
         a hierarchical model, it also involves adding padding at the end of each dialogue,
         so that every training sample (dialogue) has the same dimension.
-        """
-        
+        """        
         self.log('info', 'Padding the dialogues ...')
         
         return [self.pad_dialogue(d) for d in dialogues]
@@ -62,6 +61,7 @@ class Padder:
             dialogues += [self.empty_turn] * dif
 
         return dialogue
+    
     
     ####################
     #     UTILITIES    #

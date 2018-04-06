@@ -19,9 +19,12 @@ class DataConfig(dict):
         self['shuffle'] = True
         self['one-hot-encode'] = False
         self['hierarchical'] = False # this influences how the dialogues are preprocessed
+<<<<<<< HEAD
         
         # preprocessing paramaters
         self['chunksize'] = 100
+=======
+>>>>>>> 862dff8777db5d01aa74b25c93cb60f1514e208d
 
         # reserved keywords
         self['start'] = '<start>'

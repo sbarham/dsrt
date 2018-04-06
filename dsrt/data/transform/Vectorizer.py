@@ -8,7 +8,6 @@ import logging
 import os
 import pickle
 import copy
-# import progressbar
 import tqdm
 from multiprocessing import Pool
 

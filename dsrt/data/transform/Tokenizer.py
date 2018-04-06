@@ -1,6 +1,5 @@
 import logging
 from nltk import word_tokenize
-# import progressbar
 import tqdm
 from multiprocessing import Pool
 from dsrt.config.defaults import DataConfig
