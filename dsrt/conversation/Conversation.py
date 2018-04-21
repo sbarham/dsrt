@@ -63,6 +63,8 @@ class Conversation:
         response = self.predict(utterance)
         
         # then devectorize the model's prediction and return it as a string
+        print (response)
+        print (type(response))
         return ' '.join(self.vectorizer.devectorize_utterance(response))
     
     def predict(self, x):

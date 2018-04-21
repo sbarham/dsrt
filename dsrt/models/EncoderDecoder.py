@@ -22,6 +22,7 @@ import numpy as np
 import os
 import math
 import re
+import matplotlib.pyplot as plt
 
 # Our packages
 from dsrt.definitions import LIB_DIR, CHECKPOINT_DIR
@@ -122,12 +123,35 @@ class EncoderDecoder:
         decoder_x = data.train.decoder_x
         decoder_y = data.train.decoder_y #_ohe
 
-        self.training_model.compile(optimizer=optimizer, loss=loss)
-        self.training_model.fit([encoder_x, decoder_x], decoder_y,
+        self.training_model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+        # self.training_model.fit([encoder_x, decoder_x], decoder_y,
+        #                         batch_size=batch_size,
+        #                         epochs=num_epochs,
+        #                         validation_split=validation_split,
+        #                         callbacks=self.callbacks)
+        history = self.training_model.fit([encoder_x, decoder_x], decoder_y,
                                 batch_size=batch_size,
                                 epochs=num_epochs,
                                 validation_split=validation_split,
                                 callbacks=self.callbacks)
+        #print(history.history.keys())
+        fig1 = plt.figure()
+        plt.plot(history.history['loss'])
+        plt.plot(history.history['val_loss'])
+        plt.title('model loss')
+        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'test'], loc='upper left')
+        fig1.savefig('val_trn_loss.png')
+        
+        fig2 = plt.figure()
+        plt.plot(history.history['acc'])
+        plt.plot(history.history['val_acc'])
+        plt.title('model accuracy')
+        plt.ylabel('accuracy')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'test'], loc='upper left')
+        fig2.savefig('val_trn_accuracy.png')
         
         # remember the vectorizer used in training
         self.vectorizer = data.vectorizer

@@ -103,9 +103,9 @@ class Vectorizer:
         Take in a tokenized utterance and transform it into a sequence of indices
         """
         if safe:
-            return vectorize_utterance_safe(utterance)
+            return self.vectorize_utterance_safe(utterance)
         else:
-            return vectorize_utterance_unsafe(utterance)
+            return self.vectorize_utterance_unsafe(utterance)
         
     def vectorize_utterance_safe(self, utterance):
         for i, word in enumerate(utterance):

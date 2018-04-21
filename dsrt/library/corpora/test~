@@ -1,6 +1,8 @@
-This is a corpus.	It has words.	Another utterance.
+<<<<<<< HEAD
+This is acorpus. It haswords.	Another utterane.
+Bla bla	blabla	 blabla
+=======
 This is a test corpus.	I am testing it.	This finishes convo one.
 Here is another convo.	It only has two utterances.
 And here is the last convo.	It has four utterances.	Third utterance.	Fourth utterance.
-
-
+>>>>>>> 862dff8777db5d01aa74b25c93cb60f1514e208d
