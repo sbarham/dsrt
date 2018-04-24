@@ -1,0 +1,160 @@
+On branch master
+Your branch and 'origin/master' have diverged,
+and have 1 and 1 different commits each, respectively.
+  (use "git pull" to merge the remote branch into yours)
+
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Changes to be committed:
+
+	modified:   ../../../dsrt.egg-info/PKG-INFO
+	modified:   ../../../dsrt.egg-info/SOURCES.txt
+	new file:   ../../__pycache__/__init__.cpython-34.pyc
+	new file:   ../../__pycache__/cli.cpython-34.pyc
+	new file:   ../../__pycache__/definitions.cpython-34.pyc
+	new file:   ../../application/__pycache__/Application.cpython-34.pyc
+	new file:   ../../application/__pycache__/Context.cpython-34.pyc
+	new file:   ../../application/__pycache__/Conversant.cpython-34.pyc
+	new file:   ../../application/__pycache__/Preprocessor.cpython-34.pyc
+	new file:   ../../application/__pycache__/Trainer.cpython-34.pyc
+	new file:   ../../application/__pycache__/__init__.cpython-34.pyc
+	new file:   ../../application/__pycache__/utils.cpython-34.pyc
+	new file:   ../__pycache__/Configuration.cpython-34.pyc
+	new file:   ../__pycache__/ConfigurationLoader.cpython-34.pyc
+	new file:   ../__pycache__/__init__.cpython-34.pyc
+	deleted:    __pycache__/BaseConfig.cpython-36.pyc
+	deleted:    __pycache__/ConversationConfig.cpython-36.pyc
+	deleted:    __pycache__/DataConfig.cpython-36.pyc
+	deleted:    __pycache__/ModelConfig.cpython-36.pyc
+	deleted:    __pycache__/__init__.cpython-36.pyc
+	new file:   less
+	new file:   ../validation/__pycache__/ConversationConfigValidator.cpython-34.pyc
+	new file:   ../validation/__pycache__/DataConfigValidator.cpython-34.pyc
+	new file:   ../validation/__pycache__/ModelConfigValidator.cpython-34.pyc
+	new file:   ../validation/__pycache__/__init__.cpython-34.pyc
+	modified:   ../../conversation/Conversation.py
+	new file:   ../../conversation/__pycache__/Conversation.cpython-34.pyc
+	new file:   ../../conversation/__pycache__/__init__.cpython-34.pyc
+	new file:   ../../data/__pycache__/Corpus.cpython-34.pyc
+	new file:   ../../data/__pycache__/DataSet.cpython-34.pyc
+	new file:   ../../data/__pycache__/Properties.cpython-34.pyc
+	new file:   ../../data/__pycache__/SampleSet.cpython-34.pyc
+	new file:   ../../data/__pycache__/__init__.cpython-34.pyc
+	new file:   ../../data/transform/__pycache__/AdjacencyPairer.cpython-34.pyc
+	new file:   ../../data/transform/__pycache__/EncoderDecoderSplitter.cpython-34.pyc
+	new file:   ../../data/transform/__pycache__/Filter.cpython-34.pyc
+	new file:   ../../data/transform/__pycache__/Masker.cpython-34.pyc
+	new file:   ../../data/transform/__pycache__/Padder.cpython-34.pyc
+	new file:   ../../data/transform/__pycache__/Tokenizer.cpython-34.pyc
+	new file:   ../../data/transform/__pycache__/Vectorizer.cpython-34.pyc
+	new file:   ../../data/transform/__pycache__/__init__.cpython-34.pyc
+	new file:   ../../library/corpora/test2
+	new file:   ../../library/corpora/test~
+	new file:   ../../library/datasets/test2/data
+	new file:   ../../library/datasets/test2/properties
+	new file:   ../../library/datasets/test2/vectorizer
+	modified:   ../../models/EncoderDecoder.py
+	new file:   ../../models/__pycache__/Decoder.cpython-34.pyc
+	new file:   ../../models/__pycache__/Encoder.cpython-34.pyc
+	new file:   ../../models/__pycache__/EncoderDecoder.cpython-34.pyc
+	new file:   ../../models/__pycache__/__init__.cpython-34.pyc
+	new file:   ../../../val_trn_accuracy.png
+	new file:   ../../../val_trn_loss.png
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+
+	both modified:   ../../library/corpora/test
+	both modified:   ../../library/datasets/test/data
+	both modified:   ../../library/datasets/test/properties
+	both modified:   ../../library/datasets/test/vectorizer
+	both modified:   ../../library/models/test/inference_decoder
+	both modified:   ../../library/models/test/inference_encoder
+	both modified:   ../../library/models/test/train
+	both modified:   ../../library/models/test/vectorizer
+	both added:      ../../library/tmp/checkpoints/weights.best.hdf5
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	deleted:    ../../__pycache__/__init__.cpython-34.pyc
+	deleted:    ../../__pycache__/__init__.cpython-36.pyc
+	deleted:    ../../__pycache__/cli.cpython-34.pyc
+	deleted:    ../../__pycache__/cli.cpython-36.pyc
+	deleted:    ../../__pycache__/definitions.cpython-34.pyc
+	deleted:    ../../__pycache__/definitions.cpython-36.pyc
+	deleted:    ../../application/__pycache__/Application.cpython-34.pyc
+	deleted:    ../../application/__pycache__/Application.cpython-36.pyc
+	deleted:    ../../application/__pycache__/Context.cpython-34.pyc
+	deleted:    ../../application/__pycache__/Context.cpython-36.pyc
+	deleted:    ../../application/__pycache__/Conversant.cpython-34.pyc
+	deleted:    ../../application/__pycache__/Conversant.cpython-36.pyc
+	deleted:    ../../application/__pycache__/Preprocessor.cpython-34.pyc
+	deleted:    ../../application/__pycache__/Preprocessor.cpython-36.pyc
+	deleted:    ../../application/__pycache__/Trainer.cpython-34.pyc
+	deleted:    ../../application/__pycache__/Trainer.cpython-36.pyc
+	deleted:    ../../application/__pycache__/__init__.cpython-34.pyc
+	deleted:    ../../application/__pycache__/__init__.cpython-36.pyc
+	deleted:    ../../application/__pycache__/utils.cpython-34.pyc
+	deleted:    ../../application/__pycache__/utils.cpython-36.pyc
+	deleted:    ../__pycache__/Configuration.cpython-34.pyc
+	deleted:    ../__pycache__/Configuration.cpython-36.pyc
+	deleted:    ../__pycache__/ConfigurationLoader.cpython-34.pyc
+	deleted:    ../__pycache__/ConfigurationLoader.cpython-36.pyc
+	deleted:    ../__pycache__/__init__.cpython-34.pyc
+	deleted:    ../__pycache__/__init__.cpython-36.pyc
+	deleted:    ../validation/__pycache__/ConversationConfigValidator.cpython-34.pyc
+	deleted:    ../validation/__pycache__/ConversationConfigValidator.cpython-36.pyc
+	deleted:    ../validation/__pycache__/DataConfigValidator.cpython-34.pyc
+	deleted:    ../validation/__pycache__/DataConfigValidator.cpython-36.pyc
+	deleted:    ../validation/__pycache__/ModelConfigValidator.cpython-34.pyc
+	deleted:    ../validation/__pycache__/ModelConfigValidator.cpython-36.pyc
+	deleted:    ../validation/__pycache__/__init__.cpython-34.pyc
+	deleted:    ../validation/__pycache__/__init__.cpython-36.pyc
+	deleted:    ../../conversation/__pycache__/Conversation.cpython-34.pyc
+	deleted:    ../../conversation/__pycache__/Conversation.cpython-36.pyc
+	deleted:    ../../conversation/__pycache__/__init__.cpython-34.pyc
+	deleted:    ../../conversation/__pycache__/__init__.cpython-36.pyc
+	deleted:    ../../data/__pycache__/Corpus.cpython-34.pyc
+	deleted:    ../../data/__pycache__/Corpus.cpython-36.pyc
+	deleted:    ../../data/__pycache__/DataSet.cpython-34.pyc
+	deleted:    ../../data/__pycache__/DataSet.cpython-36.pyc
+	deleted:    ../../data/__pycache__/Properties.cpython-34.pyc
+	deleted:    ../../data/__pycache__/Properties.cpython-36.pyc
+	deleted:    ../../data/__pycache__/SampleSet.cpython-34.pyc
+	deleted:    ../../data/__pycache__/SampleSet.cpython-36.pyc
+	deleted:    ../../data/__pycache__/__init__.cpython-34.pyc
+	deleted:    ../../data/__pycache__/__init__.cpython-36.pyc
+	deleted:    ../../data/transform/__pycache__/AdjacencyPairer.cpython-34.pyc
+	deleted:    ../../data/transform/__pycache__/AdjacencyPairer.cpython-36.pyc
+	deleted:    ../../data/transform/__pycache__/EncoderDecoderSplitter.cpython-34.pyc
+	deleted:    ../../data/transform/__pycache__/EncoderDecoderSplitter.cpython-36.pyc
+	deleted:    ../../data/transform/__pycache__/Filter.cpython-34.pyc
+	deleted:    ../../data/transform/__pycache__/Filter.cpython-36.pyc
+	deleted:    ../../data/transform/__pycache__/Lower.cpython-36.pyc
+	deleted:    ../../data/transform/__pycache__/Masker.cpython-34.pyc
+	deleted:    ../../data/transform/__pycache__/Masker.cpython-36.pyc
+	deleted:    ../../data/transform/__pycache__/Padder.cpython-34.pyc
+	deleted:    ../../data/transform/__pycache__/Padder.cpython-36.pyc
+	deleted:    ../../data/transform/__pycache__/Tokenizer.cpython-34.pyc
+	deleted:    ../../data/transform/__pycache__/Tokenizer.cpython-36.pyc
+	deleted:    ../../data/transform/__pycache__/Vectorizer.cpython-34.pyc
+	deleted:    ../../data/transform/__pycache__/Vectorizer.cpython-36.pyc
+	deleted:    ../../data/transform/__pycache__/__init__.cpython-34.pyc
+	deleted:    ../../data/transform/__pycache__/__init__.cpython-36.pyc
+	deleted:    ../../library/datasets/test2/data
+	deleted:    ../../library/datasets/test2/properties
+	deleted:    ../../library/datasets/test2/vectorizer
+	deleted:    ../../models/#EncoderDecoder.py#
+	deleted:    ../../models/__pycache__/Decoder.cpython-34.pyc
+	deleted:    ../../models/__pycache__/Decoder.cpython-36.pyc
+	deleted:    ../../models/__pycache__/Encoder.cpython-34.pyc
+	deleted:    ../../models/__pycache__/Encoder.cpython-36.pyc
+	deleted:    ../../models/__pycache__/EncoderDecoder.cpython-34.pyc
+	deleted:    ../../models/__pycache__/EncoderDecoder.cpython-36.pyc
+	deleted:    ../../models/__pycache__/__init__.cpython-34.pyc
+	deleted:    ../../models/__pycache__/__init__.cpython-36.pyc
+
