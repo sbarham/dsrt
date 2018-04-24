@@ -85,5 +85,5 @@ class ModelConfig(dict):
         self['batch-size'] = 64
         self['train-test-split'] = .8
         self['validation-split'] = .2
-        self['num-epochs'] = 500
+        self['num-epochs'] = 50
         self['reporting-frequency'] = 100

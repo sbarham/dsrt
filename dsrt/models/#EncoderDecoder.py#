@@ -26,7 +26,6 @@ import re
 # Our packages
 from dsrt.definitions import LIB_DIR, CHECKPOINT_DIR
 from dsrt.config.defaults import ModelConfig
-from dsrt.conversation import Conversation
 
 
 class EncoderDecoder:
@@ -133,10 +132,8 @@ class EncoderDecoder:
         # remember the vectorizer used in training
         self.vectorizer = data.vectorizer
 
-        # ask the user if they would like to converse with the new model for
-        # spot-checking
-        if input("Would you like to converse with the newly trained model? ").lower().startswith('y'):
-            Conversation(self.encoder_model, self.decoder_model, self.vectorizer).converse()
+        # for testing purposes, offer to open up a prompt to the new model:
+        if input("Would you like to converse with the newly trained model?").startswith('y')
     
     def save_models(self, model_path):
         self.training_model.save(os.path.join(model_path, 'train'))

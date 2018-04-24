@@ -25,7 +25,7 @@ from math import ceil
 # our own imports
 from dsrt.config.defaults import DataConfig
 from dsrt.data import DataSet, SampleSet, Properties
-from dsrt.data.transform import Tokenizer, Filter, Padder, AdjacencyPairer, Vectorizer, Masker, EncoderDecoderSplitter
+from dsrt.data.transform import Tokenizer, Filter, Padder, AdjacencyPairer, Vectorizer, Masker, EncoderDecoderSplitter, Lower
 from dsrt.definitions import ROOT_DIR
 
 class Corpus:
@@ -52,6 +52,7 @@ class Corpus:
         self.corpus_loaded = False
 
         # load and tokenize the dataset
+        self.lower = Lower(self.config)
         self.tokenizer = Tokenizer(self.config)
         self.dialogues = self.load_corpus(self.corpus_path) # <-- tokenization happens here
         self.word_list, self.word_set = self.load_vocab()
@@ -86,9 +87,9 @@ class Corpus:
         if not self.corpus_loaded:
             with open(path, 'r') as f:
                 dialogues = list(f)
-                # dialogues = [l.lower() for l in list(f)]
 
-        return self.tokenizer.transform(dialogues)
+        dialogues = self.tokenizer.transform(dialogues)
+        return self.lower.transform(dialogues)
 
     def reload_corpus(self):
         """

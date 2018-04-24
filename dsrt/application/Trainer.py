@@ -9,6 +9,9 @@ class Trainer:
         self.num_gpus = num_gpus
         self.dataset_name = dataset_name
         self.saved_model_name = saved_model_name
+        self.new_model_name = new_model_name
+
+        print("new_model_name = " + new_model_name)
         
         if dataset_name is None:
             self.dataset_name = config['dataset-name']

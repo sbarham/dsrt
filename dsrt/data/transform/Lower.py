@@ -1,0 +1,20 @@
+# Decapitalizes every word in the dialogue corpus; this is crucial.
+
+from dsrt.config.defaults import DataConfig
+
+class Lower:
+    def __init__(self, config = DataConfig()):
+        self.config = config
+
+    def transform(self, dialogues):
+        '''Expects a tokenized list of dialogues; ensures that every word is lowercase'''
+        return self.lower_dialogues(dialogues)
+
+    def lower_dialogues(self, dialogues):
+        return [self.lower_dialogue(d) for d in dialogues]
+
+    def lower_dialogue(self, dialogue):
+        return [self.lower_utterance(u) for u in dialogue]
+
+    def lower_utterance(self, utterance):
+        return [w.lower() for w in utterance]
