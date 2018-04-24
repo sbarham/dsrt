@@ -6,7 +6,6 @@ Home-page: https://github.com/sbarham/dsrt
 Author: Samuel Barham, Nirat Saini
 Author-email: sbarham@terpmail.umd.edu, nirat@cs.umd.edu
 License: MIT
-Description-Content-Type: text/markdown
 Description: # Neural DSRT: Neural dialogue systems for humans
         
         [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/sbarham/dsrt/blob/master/LICENSE)
