@@ -9,13 +9,15 @@ from collections import Counter
 import nltk
 import numpy as np
 from sklearn.model_selection import train_test_split
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
 
 np.random.seed(42)
 
 BATCH_SIZE = 32
-NUM_EPOCHS = 200
+NUM_EPOCHS = 1
 HIDDEN_UNITS = 64
 DATA_PATH = 'dialogues_1000.txt'
 TESTING_DATASET = 'dlgs_trial5.txt'
@@ -26,6 +28,7 @@ MAX_TARGET_SEQ_LENGTH = 60
 MAX_VOCAB_SIZE = 10000
 
 WEIGHT_FILE_DIR = os.path.splitext(DATA_PATH)[0]
+WEIGHT_FILE_PATH = os.path.join(WEIGHT_FILE_DIR, 'encdec_final.h5')
 if not os.path.exists(WEIGHT_FILE_DIR):
     os.makedirs(WEIGHT_FILE_DIR)
 
@@ -164,14 +167,20 @@ test_gen = generate_batch(Xtest, Ytest)
 train_num_batches = len(Xtrain) // BATCH_SIZE
 test_num_batches = len(Xtest) // BATCH_SIZE
 
-weight_file_path = "encdec_model_epoch_{epoch:02d}.h5"
+weight_file_path = os.path.join(WEIGHT_FILE_DIR, "encdec_model_epoch_{epoch:02d}.h5")
 checkpoint = ModelCheckpoint(filepath=weight_file_path, save_best_only=False, period=25)
 history=model.fit_generator(generator=train_gen, steps_per_epoch=train_num_batches,
                     epochs=NUM_EPOCHS,
                     verbose=1, validation_data=test_gen, validation_steps=test_num_batches, callbacks=[checkpoint])
 
 model.save_weights(WEIGHT_FILE_PATH)
-model.save('w2w_s2s.h5')
+model.save(WEIGHT_FILE_PATH)
+
+
+# ========================================= #
+# ========================================= #
+# ========================================= #
+
 
 # Define sampling models
 encoder_model = Model(encoder_inputs, encoder_states)
