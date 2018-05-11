@@ -10,21 +10,24 @@ import nltk
 import numpy as np
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import os
 
 np.random.seed(42)
 
-BATCH_SIZE = 4
-NUM_EPOCHS = 400
-HIDDEN_UNITS = 60
-DATA_PATH = 'dlgs_trial6.txt'
+BATCH_SIZE = 32
+NUM_EPOCHS = 200
+HIDDEN_UNITS = 64
+DATA_PATH = 'dialogues_1000.txt'
 TESTING_DATASET = 'dlgs_trial5.txt'
 SIZE_OF_DATASET = sum(1 for line in open(DATA_PATH))
 print('Number of adjacency pairs used for training:',SIZE_OF_DATASET)
 MAX_INPUT_SEQ_LENGTH = 60
 MAX_TARGET_SEQ_LENGTH = 60
-MAX_VOCAB_SIZE = 800
-WEIGHT_FILE_PATH = 'word-weights.h5'
+MAX_VOCAB_SIZE = 10000
 
+WEIGHT_FILE_DIR = os.path.splitext(DATA_PATH)[0]
+if not os.path.exists(WEIGHT_FILE_DIR):
+    os.makedirs(WEIGHT_FILE_DIR)
 
 input_counter = Counter()
 target_counter = Counter()
@@ -161,7 +164,8 @@ test_gen = generate_batch(Xtest, Ytest)
 train_num_batches = len(Xtrain) // BATCH_SIZE
 test_num_batches = len(Xtest) // BATCH_SIZE
 
-checkpoint = ModelCheckpoint(filepath=WEIGHT_FILE_PATH, save_best_only=True)
+weight_file_path = "encdec_model_epoch_{epoch:02d}.h5"
+checkpoint = ModelCheckpoint(filepath=weight_file_path, save_best_only=False, period=25)
 history=model.fit_generator(generator=train_gen, steps_per_epoch=train_num_batches,
                     epochs=NUM_EPOCHS,
                     verbose=1, validation_data=test_gen, validation_steps=test_num_batches, callbacks=[checkpoint])
