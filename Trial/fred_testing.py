@@ -19,7 +19,10 @@ np.random.seed(42)
 HIDDEN_UNITS = 50
 TESTING_DATASET = 'dlgs_trial5.txt'
 WEIGHTS_DIRECTORY_NAME = 'dlgs_trial5'
-FINAL_RESULTS_FILE = WEIGHTS_DIRECTORY_NAME+'_all_weights.txt'
+
+CWD = os.getcwd()
+FINAL_RESULTS_FILE = CWD+'/'+WEIGHTS_DIRECTORY_NAME+'_all_weights.txt'
+
 
 c= np.load('word-context.npy')
 context = c.item()
@@ -109,12 +112,12 @@ if os.path.isfile(FINAL_RESULTS_FILE):
 
 output_file = open(FINAL_RESULTS_FILE,'a') 
 weight_files = glob.glob('*.h5')
-print(weight_files)
+
 for weight_file in weight_files:
     model.load_weights(weight_file)
-    output_file.write("\n==============================")
-    output_file.write("\n"+weight_file)
-    output_file.write("\n==============================")
+    output_file.write("\n==========================================")
+    output_file.write("\n\t"+weight_file)
+    output_file.write("\n==========================================")
 
     encoder_model = Model(encoder_inputs, encoder_states)
     decoder_state_inputs = [Input(shape=(HIDDEN_UNITS,)), Input(shape=(HIDDEN_UNITS,))]
@@ -133,11 +136,13 @@ for weight_file in weight_files:
         decoded_sentence = decode_sequence(input_text)
         user_input = 'Input sentence:'+input_text
         bot_output = 'Decoded sentence:'+decoded_sentence
-        #print('-')
-        #print(user_input)
-        #print(bot_output)
+        # print('-')
+        # print(user_input)
+        # print(bot_output)
         output_file.write("\n-")
         output_file.write('\n'+user_input)
         output_file.write('\n'+bot_output)
+
+    print('Tested with weights in : ', weight_file)
 
 output_file.close()
